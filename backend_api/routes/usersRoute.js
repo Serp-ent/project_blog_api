@@ -2,7 +2,6 @@ const { Router } = require('express');
 const prisma = require('../db/prismaClient');
 const usersRoute = Router();
 const bcrypt = require('bcryptjs');
-const { error } = require('console');
 const { generateToken } = require("../utlilties/auth");
 
 usersRoute.post('/login', async (req, res) => {
@@ -37,8 +36,20 @@ usersRoute.post('/login', async (req, res) => {
   }
 });
 
+
+usersRoute.get('/', async (req, res) => {
+  // TODO: add pagination
+  try {
+    const users = await prisma.user.findMany({})
+    console.log(users);
+    res.status(200).json({ users });
+  } catch (err) {
+    res.status(400).json({ error: 'Cannot fetch users data' });
+  }
+});
+
 // TODO: add asyncHandler
-usersRoute.post('/register', async (req, res) => {
+usersRoute.post('/', async (req, res) => {
   // TODO: add validation
   // TODO: add password hashing
   const {
@@ -66,24 +77,33 @@ usersRoute.post('/register', async (req, res) => {
   res.json({ result: 'success' });
 });
 
-usersRoute.get('/', (req, res) => {
-  res.send('Get all users');
-});
-
-usersRoute.post('/', (req, res) => {
-  res.send('create new user');
-});
-
-usersRoute.get('/:id', (req, res) => {
-  res.send(`Send back user with id ${req.params.id}`);
+usersRoute.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      return res.status(404).json({ error: `user with id ${id} not found` });
+    }
+    return res.json(user);
+  } catch (err) {
+    res.status(400).json({ error: 'An error occured while fetching the user' });
+  }
 });
 
 usersRoute.put('/:id', (req, res) => {
-  res.send(`Update info about user with id ${req.params.id}`);
+  // TODO:
+  res.send(`[TODO]: Update info about user with id ${req.params.id}`);
 });
 
-usersRoute.delete('/:id', (req, res) => {
-  res.send(`DELTE user with id ${req.params.id}`);
+usersRoute.delete('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  console.log('deleting user with id', id);
+  try {
+    await prisma.user.delete({ where: { id } });
+    res.json({ message: `User with id ${id} deleted successfully` });
+  } catch (err) {
+    res.status(400).json({ error: `Error deleting user with id ${id}` });
+  }
 });
 
 module.exports = usersRoute;
