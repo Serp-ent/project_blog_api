@@ -1,12 +1,36 @@
 const { Router } = require('express');
+const prisma = require('../db/prismaClient');
 const usersRoute = Router();
 
 usersRoute.post('/login', (req, res) => {
   res.send('login route');
 });
 
-usersRoute.post('/register', (req, res) => {
-  res.send('register route');
+// TODO: add asyncHandler
+usersRoute.post('/register', async (req, res) => {
+  // TODO: add validation
+  // TODO: add password hashing
+  const {
+    firstName,
+    lastName,
+    email,
+    username,
+    password,
+  } = req.body;
+
+  // TODO: check if there is already user with given email and password
+
+  const user = await prisma.user.create({
+    data: {
+      firstName,
+      lastName,
+      email,
+      username,
+      password,
+    },
+  });
+
+  res.json({ result: 'success', user });
 });
 
 usersRoute.get('/', (req, res) => {
