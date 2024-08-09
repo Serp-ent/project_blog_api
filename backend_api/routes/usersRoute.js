@@ -97,12 +97,30 @@ usersRoute.put('/:id', (req, res) => {
 
 usersRoute.delete('/:id', async (req, res) => {
   const id = Number(req.params.id);
-  console.log('deleting user with id', id);
   try {
     await prisma.user.delete({ where: { id } });
     res.json({ message: `User with id ${id} deleted successfully` });
   } catch (err) {
     res.status(400).json({ error: `Error deleting user with id ${id}` });
+  }
+});
+
+
+
+usersRoute.get('/:id/comments', async (req, res) => {
+  const authorId = Number(req.params.id);
+  try {
+    const userExist = await prisma.user.findUnique({ where: { id: authorId } });
+    if (!userExist) {
+      return res.status(404).json({ status: 'error', error: 'No user with given id' });
+    }
+
+    const comments = await prisma.comment.findMany({
+      where: { authorId },
+    });
+    res.json({ status: 'success', comments });
+  } catch (err) {
+    res.status(400).json({ error: `Error deleting user with id ${authorId}` });
   }
 });
 
