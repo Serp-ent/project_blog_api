@@ -30,7 +30,7 @@ usersRoute.post('/login', async (req, res) => {
 
     // valid credentials
     const token = generateToken(user);
-    res.json({ token });
+    return res.status(200).json({ token });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Internal server error" });

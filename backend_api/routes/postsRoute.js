@@ -1,6 +1,21 @@
 
 const { Router } = require('express');
 const postsRoute = Router();
+const passport = require('passport');
+
+postsRoute.use(
+  (req, res, next) => {
+    console.log('authentication in postsRoute');
+    next();
+  },
+  passport.authenticate('jwt', { session: false }),
+  (req, res, next) => {
+    console.log('authenticated in postsRoute');
+    next();
+
+  },
+);
+
 
 postsRoute.get('/', (req, res) => {
   res.send('Get all posts');
