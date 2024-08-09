@@ -1,6 +1,14 @@
 const { Router } = require('express');
 const usersRoute = Router();
 
+usersRoute.post('/login', (req, res) => {
+  res.send('login route');
+});
+
+usersRoute.post('/register', (req, res) => {
+  res.send('register route');
+});
+
 usersRoute.get('/', (req, res) => {
   res.send('Get all users');
 });

@@ -6,6 +6,9 @@ const commentsRoute = require('./routes/commentsRoute');
 
 const app = express();
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.use('/api/users', usersRoute);
 app.use('/api/posts', postsRoute);
 app.use('/api/comments', commentsRoute);
