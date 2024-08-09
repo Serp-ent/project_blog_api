@@ -2,9 +2,39 @@ const { Router } = require('express');
 const prisma = require('../db/prismaClient');
 const usersRoute = Router();
 const bcrypt = require('bcryptjs');
+const { error } = require('console');
+const { generateToken } = require("../utlilties/auth");
 
-usersRoute.post('/login', (req, res) => {
-  res.send('login route');
+usersRoute.post('/login', async (req, res) => {
+  // TODO: validate input
+  const { name, password } = req.body
+  if (!name || !password) {
+    return res.status(400).json({ error: 'name and password is required' });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: name,
+      }
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid name or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid name or password" });
+    }
+
+    // valid credentials
+    const token = generateToken(user);
+    res.json({ token });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // TODO: add asyncHandler
