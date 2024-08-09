@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const prisma = require('../db/prismaClient');
 const usersRoute = Router();
+const bcrypt = require('bcryptjs');
 
 usersRoute.post('/login', (req, res) => {
   res.send('login route');
@@ -19,6 +20,7 @@ usersRoute.post('/register', async (req, res) => {
   } = req.body;
 
   // TODO: check if there is already user with given email and password
+  hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await prisma.user.create({
     data: {
@@ -26,11 +28,12 @@ usersRoute.post('/register', async (req, res) => {
       lastName,
       email,
       username,
-      password,
+      password: hashedPassword,
     },
   });
 
-  res.json({ result: 'success', user });
+  // TODO: maybe return jwt token the same as for login?
+  res.json({ result: 'success' });
 });
 
 usersRoute.get('/', (req, res) => {
