@@ -16,7 +16,6 @@ export default function CommentSection({ postId }) {
 
   // TODO: add handle comment submit
   // TODO: add pagination
-  console.log(comments);
   const commentList = comments.map(c => <Comment key={c.id} comment={c} />);
 
   return (

@@ -4,7 +4,6 @@ export default function Footer() {
   return (
     <footer className={styles.footer}>
       <ul className={styles.footerList}>
-        <li>Copyright</li>
         <li>Newsletter</li>
         <li>Github</li>
       </ul>

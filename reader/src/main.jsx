@@ -11,6 +11,8 @@ import SigninForm from './components/SigninForm.jsx';
 import SignupForm from './components/SignupForm.jsx';
 import BlogPostsList from './components/blogPostsList/BlogPostsLists.jsx';
 import BlogPost from './components/blogPost/BlogPost.jsx';
+import AuthorsList from './components/authorsList/AuthorsList.jsx';
+import About from './components/about/About.jsx';
 
 const router = createBrowserRouter([
   {
@@ -33,6 +35,14 @@ const router = createBrowserRouter([
       {
         path: '/posts/:postId',
         element: <BlogPost />
+      },
+      {
+        path: '/authors',
+        element: <AuthorsList />
+      },
+      {
+        path: '/about',
+        element: <About />
       },
     ],
   }

@@ -19,7 +19,7 @@ export default function Header() {
           <Link to={"authors"}>
             <li>Authors</li>
           </Link>
-          <Link to={"authors"}>
+          <Link to={"about"}>
             <li>About</li>
           </Link>
         </ul>
