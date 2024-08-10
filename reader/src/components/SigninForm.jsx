@@ -1,10 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../utils/AuthProvider";
+
 
 export default function SigninForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const { isAuthenticated, login, logout } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,7 +38,8 @@ export default function SigninForm() {
         throw new Error('Token not received');
       }
 
-      localStorage.setItem('authToken', token);
+      login(token);
+      navigate('/');
     } catch (err) {
       setError(err.message);
     } finally {

@@ -28,7 +28,7 @@ export default function Header() {
       <div>
         {
           isAuthenticated ? (
-            <button onClick={localStorage.removeItem('authToken')}>Log out</button>
+            <button onClick={logout}>Log out</button>
           ) : (
             <>
               <Link to={'signin'}>Sign in</Link>

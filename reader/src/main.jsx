@@ -9,6 +9,7 @@ import Root from './components/Root.jsx';
 import ErrorPage from './components/error-page.jsx';
 import SigninForm from './components/SigninForm.jsx';
 import SignupForm from './components/SignupForm.jsx';
+import BlogPostsList from './components/blogPostsList/BlogPostsLists.jsx';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        index: true,
+        element: <BlogPostsList />,
+      },
       {
         path: 'signin',
         element: <SigninForm />,
