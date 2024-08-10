@@ -1,4 +1,5 @@
 import { useFetch } from "../../utils/utils";
+import BlogPost from "../blogPost/BlogPost";
 import styles from "./BlogPostsList.module.css";
 import { useState } from 'react';
 
@@ -18,12 +19,7 @@ export default function BlogPostsList() {
     <div>
       <h1>Blog Posts</h1>
       <ul className={styles.blogList}>
-        {data.map(item => {
-          return <li
-            key={item.id}
-            style={{ border: "1px solid red", margin: "8px" }}
-          >{item.id} {item.title}</li>
-        })}
+        {data.map(item => <li key={item.id}><BlogPost post={item} /></li>)}
       </ul>
     </div>
   );
