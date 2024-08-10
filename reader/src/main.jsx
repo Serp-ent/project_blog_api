@@ -13,6 +13,8 @@ import BlogPostsList from './components/blogPostsList/BlogPostsLists.jsx';
 import BlogPost from './components/blogPost/BlogPost.jsx';
 import AuthorsList from './components/authorsList/AuthorsList.jsx';
 import About from './components/about/About.jsx';
+import Profile from './components/profile/Profile.jsx';
+import MyProfile from './components/profile/MyProfile.jsx';
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ const router = createBrowserRouter([
         path: '/about',
         element: <About />
       },
+      {
+        path: '/profile',
+        element: <MyProfile />
+      },
+      {
+        path: '/profile/:id',
+        element: <Profile />
+      }
     ],
   }
 ]);
