@@ -1,13 +1,11 @@
 import Footer from "./components/footer/Footer"
 import Header from "./components/header/Header"
+import BlogPostsList from "./components/blogPostsList/BlogPostsLists"
 
 {
   /*
   TODO:
-    header
-    footer
     homePage
-    BlogPostList
     BlogPostCard
     BlogPostPage
     SideBar
@@ -25,6 +23,7 @@ function App() {
   return (
     <>
       <Header />
+      <BlogPostsList />
       <Footer />
     </>
   )

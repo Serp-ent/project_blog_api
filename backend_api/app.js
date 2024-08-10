@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config();
 const usersRoute = require('./routes/usersRoute');
 const postsRoute = require('./routes/postsRoute');
@@ -6,6 +7,7 @@ const commentsRoute = require('./routes/commentsRoute');
 
 const app = express();
 
+app.use(cors());  // allow everyone
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
