@@ -3,7 +3,11 @@ import styles from "./Footer.module.css";
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      Footer
+      <ul className={styles.footerList}>
+        <li>Copyright</li>
+        <li>Newsletter</li>
+        <li>Github</li>
+      </ul>
     </footer>
   );
 } 
