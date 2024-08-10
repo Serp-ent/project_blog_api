@@ -3,7 +3,7 @@ import styles from "./Header.module.css";
 import { useAuth } from "../../utils/AuthProvider";
 
 export default function Header() {
-  const { isAuthenticated, login, logout } = useAuth();
+  const { user, isAuthenticated, login, logout } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -28,7 +28,7 @@ export default function Header() {
           {
             isAuthenticated ? (
               <>
-                <Link to={'profile'}>Profile</Link>
+                <Link to={`profile/${user.id}`}>Profile</Link>
                 <Link onClick={logout}>Logout</Link>
               </>
             ) : (

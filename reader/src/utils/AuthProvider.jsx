@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, useEffect } from "react";
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
@@ -7,28 +8,38 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
-    setUser(!!token);
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setUser({
+        username: decodedToken.username,
+        id: decodedToken.id,
+      });
+    }
   }, []);
 
   const login = (token) => {
     localStorage.setItem("authToken", token);
-    setUser(true);
+    const decodedToken = jwtDecode(token);
+    setUser({
+      username: decodedToken.username,
+      id: decodedToken.id,
+    });
   }
 
   const logout = () => {
-    localStorage.removeItem("authToken");
-    setUser(false);
+    localStorage.removeItem("authToken"); setUser(false);
+    setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: user, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context =  useContext(AuthContext);
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
