@@ -23,9 +23,12 @@ export default function CommentSection({ postId }) {
     <>
       {/* // TODO: input comment */}
       <div className={styles.commentSection}>
-        {commentList}
+        {commentList.length > 0 ?
+          commentList
+          : <div>No comments. Be first!</div>}
       </div>
     </>
   );
 
+  // TODO: maybe add button to load other comments
 }
