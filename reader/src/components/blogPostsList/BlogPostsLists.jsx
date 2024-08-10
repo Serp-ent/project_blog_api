@@ -21,7 +21,7 @@ export default function BlogPostsList() {
         {data.map(item => {
           return <li
             key={item.id}
-            style={{ border: "1px solid red; margin: 8px" }}
+            style={{ border: "1px solid red", margin: "8px" }}
           >{item.id} {item.title}</li>
         })}
       </ul>
