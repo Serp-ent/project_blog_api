@@ -1,0 +1,24 @@
+.form {
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+}
+
+.sendForm {
+  margin: 8px;
+  background-color: inherit;
+  color: inherit;
+  padding: 8px;
+  border: 1px solid #666666;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  width: 50%;
+}

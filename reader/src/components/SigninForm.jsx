@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../utils/AuthProvider";
 
+import styles from "./form.module.css"
 
 export default function SigninForm() {
   const [username, setUsername] = useState('');
@@ -48,25 +49,37 @@ export default function SigninForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Username:
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit}
+    >
+      <div className={styles.formField}>
+        <label>
+          Username:
+        </label>
         <input
           type="text"
           name="username"
           value={username}
           onChange={e => setUsername(e.target.value)} />
-      </label>
-      <label>
-        Password:
+      </div>
+
+
+      <div className={styles.formField}>
+        <label>
+          Password:
+        </label>
         <input
           type="password"
           name="password"
           value={password}
           onChange={e => setPassword(e.target.value)} />
-      </label>
+      </div>
 
-      <button type="submit" disabled={loading}>
+      <button
+        className={styles.sendForm}
+        type="submit"
+        disabled={loading}>
         {loading ? 'Signing in...' : 'Sign in'}
       </button>
 

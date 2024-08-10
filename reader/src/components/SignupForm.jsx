@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from './form.module.css';
 
 export default function SignupForm() {
   // TODO: encapsulate that into one object
@@ -41,43 +42,73 @@ export default function SignupForm() {
 
   return (
     <form
-      style={{ display: "flex", flexDirection: "column", }}
+      className={styles.form}
       onSubmit={handleSubmit}>
-      <label>
-        First Name:
-        <input />
-      </label>
-      <label>
-        Last Name:
-        <input />
-      </label>
-      <label>
-        email:
-        <input name="email" value={email} onChange={e => setEmail(e.target.value)} />
-      </label>
 
-      <label>
-        Username:
+      <div className={styles.formField}>
+        <label htmlFor="firstName">
+          First Name:
+        </label>
+        <input id="firstName" name="firstName" />
+      </div>
+
+      <div className={styles.formField}>
+        <label htmlFor="firstName">
+          Last Name:
+        </label>
+        <input id="lastName" name="lastName" />
+      </div>
+
+      <div className={styles.formField}>
+        <label htmlFor="email"> email: </label>
         <input
+          name="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          id="email"
+        />
+      </div>
+
+      <div className={styles.formField}>
+        <label htmlFor="username">
+          Username:
+        </label>
+        <input
+          id="username"
           type="text"
           name="username"
           value={username}
           onChange={e => setUsername(e.target.value)} />
-      </label>
-      <label>
-        Password:
+      </div >
+
+      <div className={styles.formField}>
+        <label htmlFor="password">
+          Password:
+        </label>
         <input
           type="password"
           name="password"
+          id="password"
           value={password}
           onChange={e => setPassword(e.target.value)} />
-      </label>
-      <label>
-        Confirm Password:
-        <input />
-      </label>
-      <button type="submit">Signup</button>
+      </div >
+
+      <div className={styles.formField}>
+        <label htmlFor="confirmPassword">
+          Confirm Password:
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password" />
+      </div >
+
+      <button
+        className={styles.sendForm}
+        type="submit">
+        Signup
+      </button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-    </form>
+    </form >
   );
 }
