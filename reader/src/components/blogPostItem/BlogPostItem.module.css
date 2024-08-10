@@ -1,0 +1,11 @@
+.blogPost {
+  border: 1px solid black;
+  padding: 8px;
+  margin: 16px;
+}
+
+.blogPostClickable {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}

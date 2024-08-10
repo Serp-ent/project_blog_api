@@ -10,6 +10,7 @@ import ErrorPage from './components/error-page.jsx';
 import SigninForm from './components/SigninForm.jsx';
 import SignupForm from './components/SignupForm.jsx';
 import BlogPostsList from './components/blogPostsList/BlogPostsLists.jsx';
+import BlogPost from './components/blogPost/BlogPost.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: 'signup',
         element: <SignupForm />,
+      },
+      {
+        path: '/posts/:postId',
+        element: <BlogPost />
       },
     ],
   }
