@@ -1,10 +1,14 @@
 .footer {
   background-color: #e4e4e4;
+  display: flex;
+  justify-content: center;
 }
 
 .footerList {
   list-style-type: none;
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 0;
+  margin: 12px;
 }
