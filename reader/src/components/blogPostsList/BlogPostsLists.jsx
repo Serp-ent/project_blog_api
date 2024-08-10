@@ -4,6 +4,7 @@ import styles from "./BlogPostsList.module.css";
 import { useState } from 'react';
 
 export default function BlogPostsList() {
+  // TODO: add pagination and infinite scroll
   const { data, loading, error } = useFetch('http://localhost:3000/api/posts');
 
   if (loading) {

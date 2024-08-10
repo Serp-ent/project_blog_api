@@ -1,5 +1,8 @@
 ul.blogList {
   padding: 0;
-  margin: 8px;
   border: 1px solid black;
+  max-width: 1000px;
+  margin: 0 auto;
+  
+  list-style-type: none;
 }
