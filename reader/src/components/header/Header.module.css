@@ -45,14 +45,14 @@ ul.navItems a {
   width: 80%;
 }
 
-.accountSection {
+.actions {
   display: flex;
   justify-content: space-between;
   gap: 8px;
   margin: 8px 0;
 }
 
-.accountSection a {
+.actions a {
   text-align: center;
   width: 100%;
   padding: 4px 8px;
@@ -62,19 +62,3 @@ ul.navItems a {
   border-radius: 16px;
 }
 
-.logoutButton {
-  display: flex;
-  flex-direction: column;
-  /* justify-content: center; */
-  width: 100%;
-  margin: 8px 0;
-}
-
-.logoutButton button {
-  padding: 4px 8px;
-  background-color: white;
-  font-size: 1.1rem;
-  border: 1px solid #666666;
-  border-radius: 16px;
-  color: inherit;
-}

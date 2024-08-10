@@ -24,10 +24,13 @@ export default function Header() {
           </Link>
         </ul>
 
-        <div className={isAuthenticated ? styles.logoutButton : styles.accountSection}>
+        <div className={styles.actions}>
           {
             isAuthenticated ? (
-              <button onClick={logout}>Log out</button>
+              <>
+                <Link to={'profile'}>Profile</Link>
+                <Link onClick={logout}>Logout</Link>
+              </>
             ) : (
               <>
                 <Link to={'signin'}>Sign in</Link>
