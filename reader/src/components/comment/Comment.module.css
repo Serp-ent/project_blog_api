@@ -1,0 +1,17 @@
+.comment {
+  border: 1px solid #66666655;
+  margin: 4px;
+  padding: 4px;
+}
+
+.comment h6 {
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.comment p {
+  margin: 0;
+  font-size: 0.9rem;
+  padding: 4px;
+}

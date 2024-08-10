@@ -1,6 +1,7 @@
 import styles from "./CommentSection.module.css";
 import { useAuth } from "../../utils/AuthProvider";
 import { useEffect, useState } from "react";
+import Comment from "../comment/Comment";
 
 export default function CommentSection({ postId }) {
   const { isAuthenticated } = useAuth();
@@ -16,20 +17,12 @@ export default function CommentSection({ postId }) {
   // TODO: add handle comment submit
   // TODO: add pagination
   console.log(comments);
-  const commentList = comments.map(c => {
-    return (
-      <div>
-        <h6>{c.author.username} at {c.createdAt}</h6>
-        <p>{c.content}</p>
-      </div>
-    )
-  });
+  const commentList = comments.map(c => <Comment key={c.id} comment={c} />);
 
   return (
     <>
       {/* // TODO: input comment */}
       <div className={styles.commentSection}>
-        <h3>Comments:</h3>
         {commentList}
       </div>
     </>
