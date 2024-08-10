@@ -1,5 +1,3 @@
-import Footer from "./components/footer/Footer"
-import Header from "./components/header/Header"
 import BlogPostsList from "./components/blogPostsList/BlogPostsLists"
 
 {
@@ -22,9 +20,7 @@ import BlogPostsList from "./components/blogPostsList/BlogPostsLists"
 function App() {
   return (
     <>
-      <Header />
       <BlogPostsList />
-      <Footer />
     </>
   )
 }

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -21,6 +22,10 @@ export default function Header() {
           </label>
         </div>
       </nav>
+      <div>
+        <Link to={'signin'}>Sign in</Link>
+        <Link to={'signup'}>Sign up</Link>
+      </div>
     </header >
   );
 }
