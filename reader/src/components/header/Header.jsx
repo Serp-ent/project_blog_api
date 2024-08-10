@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
+import { useAuth } from "../../utils/AuthProvider";
 
 export default function Header() {
+  const { isAuthenticated, login, logout } = useAuth();
+
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
@@ -23,8 +26,16 @@ export default function Header() {
         </div>
       </nav>
       <div>
-        <Link to={'signin'}>Sign in</Link>
-        <Link to={'signup'}>Sign up</Link>
+        {
+          isAuthenticated ? (
+            <button onClick={localStorage.removeItem('authToken')}>Log out</button>
+          ) : (
+            <>
+              <Link to={'signin'}>Sign in</Link>
+              <Link to={'signup'}>Sign up</Link>
+            </>
+          )
+        }
       </div>
     </header >
   );

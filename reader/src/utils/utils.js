@@ -1,7 +1,25 @@
 import { useState, useEffect } from "react";
 
+export async function fetchWithAuth(url, options = {}) {
+  const token = localStorage.getItem('authToken');
+  const defaultOptions = {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`,
+    },
+  };
+
+  const response = await fetch(url, defaultOptions)
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  return await response.json();
+}
+
 // TODO: useEffect with options dependency
-function useFetch(url, options = {}) {
+export function useFetch(url, options = {}) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,5 +55,3 @@ function useFetch(url, options = {}) {
 
   return { data, loading, error };
 }
-
-export default useFetch;
