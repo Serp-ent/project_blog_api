@@ -108,7 +108,8 @@ postsRoute.get('/:id/comments', async (req, res) => {
     }
 
     const comments = await prisma.comment.findMany({
-      where: { postId }
+      where: { postId },
+      include: { author: true },
     });
 
     return res.json({ comments })

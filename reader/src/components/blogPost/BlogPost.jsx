@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import styles from "./BlogPost.module.css";
 import { fetchWithAuth } from "../../utils/utils";
 import { useEffect, useState } from "react";
+import CommentSection from "../commentSection/CommentSection";
 
 export default function BlogPost() {
   const { postId } = useParams();
@@ -24,6 +25,8 @@ export default function BlogPost() {
     <div>
       <h1>{post.title}</h1>
       <p>{post.content}</p>
+
+      <CommentSection postId={postId}/>
     </div>
   );
 }
