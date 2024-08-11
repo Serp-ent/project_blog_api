@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('../config/passport-cfg');
 const { body, validationResult } = require('express-validator');
 const { authorizeUser } = require('../middleware/authorization');
+const userService = require('../services/userService');
 
 
 const loginUser = async (req, res) => {
@@ -97,16 +98,9 @@ const registerUser = [
     // TODO: check if there is already user with given email and password
     hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        username,
-        password: hashedPassword,
-      },
+    const user = await userService.createUser({
+      firstName, lastName, email, username, password,
     });
-
     // TODO: maybe return jwt token the same as for login?
     res.json({ result: 'success' });
   },
