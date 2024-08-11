@@ -8,6 +8,10 @@ export default function CommentSection({ postId }) {
   const { isAuthenticated } = useAuth();
   const [comments, setComments] = useState([]);
 
+  const handleCommentAdded = (newComment) => {
+    setComments([newComment, ...comments]);
+  };
+
   useEffect(() => {
     fetch(`http://localhost:3000/api/posts/${postId}/comments`)
       .then(response => response.json())
@@ -22,7 +26,11 @@ export default function CommentSection({ postId }) {
     <>
       {/* // TODO: input comment */}
       <div className={styles.commentSection}>
-        {isAuthenticated && <CommentInput />}
+
+        {isAuthenticated && <CommentInput
+          postId={postId}
+          onCommentAdded={handleCommentAdded} />}
+
         {commentList.length > 0 ?
           commentList
           : <div>No comments. Be first!</div>}

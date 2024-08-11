@@ -138,9 +138,21 @@ postsRoute.post('/:id/comments', async (req, res) => {
         authorId,
         postId,
         content,
+      },
+      include: {
+        author: {
+          select: {
+            username: true,
+          }
+        }
       }
     });
-    res.json({ message: 'New comment created', comment });
+
+    res.json({
+      status: 'success',
+      message: 'Comment created',
+      comment
+    });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ error: "Failed to post a comment" })
