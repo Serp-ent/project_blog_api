@@ -1,5 +1,5 @@
 const prisma = require('../db/prismaClient');
-const passport = require('passport');
+const passport = require('../config/passport-cfg');
 
 const updateComment = async (req, res) => {
   const { content } = req.body;

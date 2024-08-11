@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const passport = require('./config/passport-cfg');
 const usersRoute = require('./routes/usersRoute');
 const postsRoute = require('./routes/postsRoute');
 const commentsRoute = require('./routes/commentsRoute');
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());  // allow everyone
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(passport.initialize());
 
 app.use('/api/users', usersRoute);
 app.use('/api/posts', postsRoute);

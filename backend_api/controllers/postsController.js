@@ -1,4 +1,4 @@
-const passport = require('passport');
+const passport = require('../config/passport-cfg');
 const prisma = require('../db/prismaClient')
 
 const getAllPosts = async (req, res) => {

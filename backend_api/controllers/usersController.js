@@ -2,7 +2,7 @@
 const prisma = require('../db/prismaClient');
 const { generateToken } = require("../utlilties/auth");
 const bcrypt = require('bcryptjs');
-const passport = require('passport');
+const passport = require('../config/passport-cfg');
 
 const loginUser = async (req, res) => {
   // TODO: validate input
