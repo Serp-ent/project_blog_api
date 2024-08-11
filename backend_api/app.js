@@ -5,7 +5,7 @@ const passport = require('./config/passport-cfg');
 const usersRoute = require('./routes/usersRoute');
 const postsRoute = require('./routes/postsRoute');
 const commentsRoute = require('./routes/commentsRoute');
-const { errorHandler } = require('./utlilties/errorHandler');
+const { errorHandler } = require('./utilities/errorHandler');
 const morgan = require('morgan');
 
 const app = express();

@@ -1,6 +1,6 @@
 
 const prisma = require('../db/prismaClient');
-const { generateToken } = require("../utlilties/auth");
+const { generateToken } = require("../utilities/auth");
 const bcrypt = require('bcryptjs');
 const passport = require('../config/passport-cfg');
 const { body, validationResult } = require('express-validator');

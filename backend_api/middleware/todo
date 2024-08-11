@@ -7,3 +7,26 @@ TODO: add asyncHandler for every async function
 TODO: in services there should be functions that does database queries
 
 TODO: add testing using supertest and jest
+
+<!--
+ INFO: nice function 
+const checkRole = (roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+};
+
+usage:
+app.get('/admin', checkRole(['admin']), (req, res) => {
+  res.send('Welcome, Admin!');
+});
+
+app.get('/editor', checkRole(['editor']), (req, res) => {
+  res.send('Welcome, Editor!');
+})
+
+ -->
+
+ TODO: services should manage authentication and authorization logic
+ such as generating and validating JWT tokens
