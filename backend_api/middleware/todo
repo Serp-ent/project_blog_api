@@ -5,3 +5,5 @@ TODO: requestLogger
 TODO: add asyncHandler for every async function
 
 TODO: in services there should be functions that does database queries
+
+TODO: add testing using supertest and jest
