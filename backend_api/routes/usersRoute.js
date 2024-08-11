@@ -96,11 +96,23 @@ usersRoute.post('/', async (req, res) => {
 usersRoute.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
   try {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        username: true,
+        role: true,
+        registeredAt: true,
+      },
+    });
     if (!user) {
       return res.status(404).json({ error: `user with id ${id} not found` });
     }
-    return res.json(user);
+
+    return res.json({ status: 'success', user });
   } catch (err) {
     res.status(400).json({ error: 'An error occured while fetching the user' });
   }

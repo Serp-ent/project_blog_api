@@ -16,7 +16,7 @@ export default function MyProfile() {
     return <Navigate to={'/'}></Navigate>
   }
 
-  const userInfo = data;
+  const userInfo = data.user;
   return (
     <div>
       <h1>My Profile</h1>
