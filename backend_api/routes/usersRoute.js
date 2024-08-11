@@ -3,6 +3,7 @@ const prisma = require('../db/prismaClient');
 const usersRoute = Router();
 const bcrypt = require('bcryptjs');
 const { generateToken } = require("../utlilties/auth");
+const passport = require('passport');
 
 usersRoute.post('/login', async (req, res) => {
   // TODO: validate input
@@ -118,10 +119,52 @@ usersRoute.get('/:id', async (req, res) => {
   }
 });
 
-usersRoute.put('/:id', (req, res) => {
-  // TODO:
-  res.send(`[TODO]: Update info about user with id ${req.params.id}`);
-});
+usersRoute.put('/:id',
+  // TODO: add validation
+  passport.authenticate('jwt', { session: false }),
+
+  (req, res, next) => {
+    if (req.user.id !== Number(req.params.id)) {
+      return res.json({ error: 'Unauthorized' });
+    }
+
+    next();
+  },
+
+  async (req, res) => {
+    const { firstName, lastName } = req.body;
+
+    const updatedData = {}
+
+    if (firstName && firstName.trim()) {
+      updatedData.firstName = firstName.trim();
+    }
+    if (lastName && lastName.trim()) {
+      updatedData.lastName = lastName.trim();
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: req.user.id,
+      },
+      data: updatedData,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        username: true,
+        role: true,
+        registeredAt: true,
+      },
+    });
+
+    return res.json({
+      status: 'success',
+      user: updatedUser,
+    });
+  }
+);
 
 usersRoute.delete('/:id', async (req, res) => {
   const id = Number(req.params.id);
