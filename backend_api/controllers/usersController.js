@@ -1,5 +1,4 @@
 
-const prisma = require('../db/prismaClient');
 const { generateToken } = require("../utilities/auth");
 const bcrypt = require('bcryptjs');
 const passport = require('../config/passport-cfg');
@@ -16,12 +15,7 @@ const loginUser = async (req, res) => {
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        username: name,
-      }
-    });
-
+    const user = await userService.findUserByUsername(name, { includePassword: true });
     if (!user) {
       return res.status(401).json({ error: "Invalid name or password" });
     }
@@ -46,20 +40,7 @@ const getAllUsers = async (req, res) => {
 
   // TODO: add pagination
   try {
-    const users = await prisma.user.findMany({
-      where: {
-        ...(authorFilter && { role: authorFilter })
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        username: true,
-        role: true,
-        registeredAt: true,
-      },
-    })
+    const users = await userService.getAllUsers(authorFilter);
 
     return res.status(200).json({ status: 'success', users });
   } catch (err) {
@@ -109,18 +90,7 @@ const registerUser = [
 const getUserWithId = async (req, res) => {
   const id = Number(req.params.id);
   try {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        username: true,
-        role: true,
-        registeredAt: true,
-      },
-    });
+    const user = await userService.findUserById(id);
     if (!user) {
       return res.status(404).json({ error: `user with id ${id} not found` });
     }
@@ -147,22 +117,7 @@ const updateUserWithId = [
       updatedData.lastName = lastName.trim();
     }
 
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: req.user.id,
-      },
-      data: updatedData,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        username: true,
-        role: true,
-        registeredAt: true,
-      },
-    });
-
+    const updatedUser = await userService.updateUser(req.user.id, ...updatedData);
     return res.json({
       status: 'success',
       user: updatedUser,
@@ -173,7 +128,7 @@ const updateUserWithId = [
 const deleteUserWithId = async (req, res) => {
   const id = Number(req.params.id);
   try {
-    await prisma.user.delete({ where: { id } });
+    await userService.deleteUserWithId(id);
     res.json({ message: `User with id ${id} deleted successfully` });
   } catch (err) {
     res.status(400).json({ error: `Error deleting user with id ${id}` });
