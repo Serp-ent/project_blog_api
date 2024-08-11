@@ -3,6 +3,8 @@ const prisma = require('../db/prismaClient');
 const { generateToken } = require("../utlilties/auth");
 const bcrypt = require('bcryptjs');
 const passport = require('../config/passport-cfg');
+const { body, validationResult } = require('express-validator');
+
 
 const loginUser = async (req, res) => {
   // TODO: validate input
@@ -63,34 +65,51 @@ const getAllUsers = async (req, res) => {
   }
 }
 
-const registerUser = async (req, res) => {
-  // TODO: add asyncHandler
-  // TODO: add validation
-  // TODO: add password hashing
-  const {
-    firstName,
-    lastName,
-    email,
-    username,
-    password,
-  } = req.body;
+// TODO:
+const validateUserForm = [
+  body('password')
+    .trim()
+    .isLength({ min: 1 }).withMessage('Password must contain at least one character'),
+];
 
-  // TODO: check if there is already user with given email and password
-  hashedPassword = await bcrypt.hash(password, 10);
+const registerUser = [
+  validateUserForm,
+  async (req, res) => {
+    // TODO: add asyncHandler
+    // TODO: add validation
 
-  const user = await prisma.user.create({
-    data: {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    console.log(req.body);
+
+    const {
       firstName,
       lastName,
       email,
       username,
-      password: hashedPassword,
-    },
-  });
+      password,
+    } = req.body;
 
-  // TODO: maybe return jwt token the same as for login?
-  res.json({ result: 'success' });
-};
+    // TODO: check if there is already user with given email and password
+    hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        username,
+        password: hashedPassword,
+      },
+    });
+
+    // TODO: maybe return jwt token the same as for login?
+    res.json({ result: 'success' });
+  },
+]
 
 const getUserWithId = async (req, res) => {
   const id = Number(req.params.id);
