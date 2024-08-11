@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./Comment.module.css";
 
 export default function Comment({ comment: c }) {
@@ -6,7 +7,17 @@ export default function Comment({ comment: c }) {
 
   return (
     <div className={styles.comment}>
-      <h6>{c.author.username} at {prettyDate}</h6>
+      <h6>
+        <div className={styles.username}>
+          <Link to={`/profile/${c.authorId}`}>
+            {c.author.username}
+          </Link>
+        </div>
+        <div>
+          {prettyDate}
+        </div>
+      </h6>
+
       <p>{c.content}</p>
     </div>
   );
