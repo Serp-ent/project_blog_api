@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useFetch } from '../../utils/utils';
 import styles from './AuthorsList.module.css';
 
@@ -20,15 +21,16 @@ export default function AuthorsList() {
   // TODO: css 
   const authorList = authors.map(a => {
     return (
-      <div key={a.id}
-        className={styles.authorItem}
-      >
-        <h3>{a.firstName} {a.lastName}</h3>
-        <p> email: {a.email} </p>
-        <p> username: {a.username} </p>
-        {/* TODO: pretty print date simmilar is in comment section */}
-        <p> registered at: {a.registeredAt} </p>
-      </div>)
+      <Link key={a.id} to={`/profile/${a.id}`}>
+        <div className={styles.authorItem}>
+          <h3>{a.firstName} {a.lastName}</h3>
+          <p> email: {a.email} </p>
+          <p> username: {a.username} </p>
+          {/* TODO: pretty print date simmilar is in comment section */}
+          <p> registered at: {a.registeredAt} </p>
+        </div>
+      </Link >
+    )
   });
   return (
     <div>

@@ -4,3 +4,8 @@
   border-radius: 8px;
   padding: 4px;
 }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

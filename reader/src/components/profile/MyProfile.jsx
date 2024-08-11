@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthProvider";
 import { useFetch } from "../../utils/utils";
 
+// TODO: user should be able to change info in its own profile
 export default function MyProfile() {
   const { isAuthenticated, user } = useAuth()
   const { data, loading, error } = useFetch(`http://localhost:3000/api/users/${user.id}`);
