@@ -126,37 +126,39 @@ postsRoute.get('/:id/comments', async (req, res) => {
 });
 
 
-postsRoute.post('/:id/comments', async (req, res) => {
-  // TODO: add validation
-  const { content } = req.body;
-  const postId = Number(req.params.id);
-  // const authorId = req.user.id;
-  const authorId = 8;
-  try {
-    const comment = await prisma.comment.create({
-      data: {
-        authorId,
-        postId,
-        content,
-      },
-      include: {
-        author: {
-          select: {
-            username: true,
+postsRoute.post('/:id/comments',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    // TODO: add validation
+    const { content } = req.body;
+    const postId = Number(req.params.id);
+    const authorId = req.user.id;
+    try {
+      const comment = await prisma.comment.create({
+        data: {
+          authorId,
+          postId,
+          content,
+        },
+        include: {
+          author: {
+            select: {
+              username: true,
+            }
           }
         }
-      }
-    });
+      });
 
-    res.json({
-      status: 'success',
-      message: 'Comment created',
-      comment
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(400).json({ error: "Failed to post a comment" })
-  }
-});
+      res.json({
+        status: 'success',
+        message: 'Comment created',
+        comment
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: "Failed to post a comment" })
+    }
+  },
+);
 
 module.exports = postsRoute;
