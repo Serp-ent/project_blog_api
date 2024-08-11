@@ -58,7 +58,6 @@ usersRoute.get('/', async (req, res) => {
       },
     })
 
-    console.log(users);
     return res.status(200).json({ status: 'success', users });
   } catch (err) {
     return res.status(400).json({ error: 'Cannot fetch users data' });
