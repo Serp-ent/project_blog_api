@@ -2,8 +2,6 @@ const passport = require('passport');
 const prisma = require('../db/prismaClient');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const jwt = require('jsonwebtoken');
-
 require('dotenv').config();
 
 const opts = {

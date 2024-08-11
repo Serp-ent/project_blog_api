@@ -1,4 +1,3 @@
-const passport = require('../config/passport-cfg');
 const prisma = require('../db/prismaClient')
 
 const getAllPosts = async (req, res) => {
@@ -6,7 +5,7 @@ const getAllPosts = async (req, res) => {
     const posts = await prisma.post.findMany({});
     return res.json({ posts });
   } catch (err) {
-    res.status(404).json({ error: "Cannot fetch posts" });
+    res.status(404).json({ error: `Cannot fetch posts ${err.message}` });
   }
 }
 
@@ -43,7 +42,7 @@ const getPostWithId = async (req, res) => {
 
     return res.json({ message: "success", post });
   } catch (err) {
-    return res.status(400).json({ error: 'Internal server error' });
+    return res.status(400).json({ error: `Internal server error ${err.message}` });
   }
 }
 

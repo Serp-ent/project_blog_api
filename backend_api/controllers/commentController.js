@@ -50,7 +50,7 @@ const getCommentsOfUser = async (req, res) => {
     });
     res.json({ status: 'success', comments });
   } catch (err) {
-    res.status(400).json({ error: `Error deleting user with id ${authorId}` });
+    res.status(400).json({ error: `Error deleting user with id ${authorId} ${err.message}` });
   }
 }
 
@@ -79,7 +79,7 @@ const getCommentsUnderPost = async (req, res) => {
 
     return res.json({ comments })
   } catch (err) {
-    res.status(400).json({ error: "Internal server error" });
+    res.status(400).json({ error: `Internal server error ${err.message}` });
   }
 }
 
