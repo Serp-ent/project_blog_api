@@ -35,7 +35,7 @@ export function useFetch(url, options = {}) {
         }
         const result = await response.json();
         if (isMounted) {
-          setData(result.posts);
+          setData(result);
           setLoading(false);
         }
       } catch (err) {

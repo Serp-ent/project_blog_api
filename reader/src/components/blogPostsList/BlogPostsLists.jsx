@@ -15,10 +15,11 @@ export default function BlogPostsList() {
     return <p>Error: {error.message}</p>
   }
 
+  const posts = data.posts;
 
   return (
     <div>
-      {data.map(item => <BlogPostItem key={item.id} post={item} />)}
+      {posts.map(item => <BlogPostItem key={item.id} post={item} />)}
     </div>
   );
 }

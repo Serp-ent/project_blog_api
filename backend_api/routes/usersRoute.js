@@ -38,13 +38,30 @@ usersRoute.post('/login', async (req, res) => {
 
 
 usersRoute.get('/', async (req, res) => {
+  const { role } = req.query;
+  const authorFilter = role?.toLowerCase() === 'author' ? 'AUTHOR' : undefined;
+
   // TODO: add pagination
   try {
-    const users = await prisma.user.findMany({})
+    const users = await prisma.user.findMany({
+      where: {
+        ...(authorFilter && { role: authorFilter })
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        username: true,
+        role: true,
+        registeredAt: true,
+      },
+    })
+
     console.log(users);
-    res.status(200).json({ users });
+    return res.status(200).json({ status: 'success', users });
   } catch (err) {
-    res.status(400).json({ error: 'Cannot fetch users data' });
+    return res.status(400).json({ error: 'Cannot fetch users data' });
   }
 });
 
