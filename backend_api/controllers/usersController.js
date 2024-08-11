@@ -80,7 +80,7 @@ const registerUser = [
     hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await userService.createUser({
-      firstName, lastName, email, username, password,
+      firstName, lastName, email, username, hashedPassword,
     });
     // TODO: maybe return jwt token the same as for login?
     res.json({ result: 'success' });

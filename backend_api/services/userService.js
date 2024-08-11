@@ -19,13 +19,13 @@ const findUserById = async (id, options = {}) => {
 };
 
 const createUser = async (userData) => {
-  prisma.user.create({
+  return await prisma.user.create({
     data: {
-      firstName,
-      lastName,
-      email,
-      username,
-      password: hashedPassword,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      username: userData.username,
+      password: userData.hashedPassword,
     },
   });
 }
