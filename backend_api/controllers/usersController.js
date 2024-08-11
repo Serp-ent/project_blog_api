@@ -4,6 +4,7 @@ const { generateToken } = require("../utlilties/auth");
 const bcrypt = require('bcryptjs');
 const passport = require('../config/passport-cfg');
 const { body, validationResult } = require('express-validator');
+const { authorizeUser } = require('../middleware/authorization');
 
 
 const loginUser = async (req, res) => {
@@ -139,15 +140,7 @@ const getUserWithId = async (req, res) => {
 const updateUserWithId = [
   // TODO: add validation
   passport.authenticate('jwt', { session: false }),
-
-  (req, res, next) => {
-    if (req.user.id !== Number(req.params.id)) {
-      return res.json({ error: 'Unauthorized' });
-    }
-
-    next();
-  },
-
+  authorizeUser,
   async (req, res) => {
     const { firstName, lastName } = req.body;
 
