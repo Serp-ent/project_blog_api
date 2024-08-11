@@ -2,6 +2,7 @@
 const { Router } = require('express');
 const postsRoute = Router();
 const controller = require('../controllers/postsController');
+const commentController = require('../controllers/commentController');
 
 // TODO: add authentication
 
@@ -14,7 +15,7 @@ postsRoute.post('/:id', controller.publishPostWithId);
 
 postsRoute.put('/:id', controller.updatePostWithId);
 
-postsRoute.get('/:id/comments', controller.getCommentUnderPost);
-postsRoute.post('/:id/comments', controller.addNewCommentUnderPost);
+postsRoute.get('/:id/comments', commentController.getCommentsUnderPost);
+postsRoute.post('/:id/comments', commentController.addNewCommentUnderPost);
 
 module.exports = postsRoute;
