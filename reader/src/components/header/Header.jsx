@@ -7,9 +7,11 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.logo}>
-        Awesome Blog
-      </div>
+      <Link to={'/'}>
+        <div className={styles.logo}>
+          Awesome Blog
+        </div>
+      </Link>
 
       <nav className={styles.nav}>
         <ul className={styles.navItems}>
