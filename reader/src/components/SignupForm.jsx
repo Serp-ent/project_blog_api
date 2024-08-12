@@ -4,9 +4,13 @@ import styles from './form.module.css';
 
 export default function SignupForm() {
   // TODO: encapsulate that into one object
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState('')
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('')
-  const [email, setEmail] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -15,16 +19,25 @@ export default function SignupForm() {
     event.preventDefault();
 
     try {
+      console.log('sending form to the server');
       const response = await fetch('http://localhost:3000/api/users/', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password, email })
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          username,
+          email,
+          password,
+          passwordConfirm,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Login failed');
+        const errors = (await response.json()).errors;
+        throw new Error(errors.at(0).msg); // throw first error
       }
 
       const result = await response.json();
@@ -49,14 +62,22 @@ export default function SignupForm() {
         <label htmlFor="firstName">
           First Name:
         </label>
-        <input id="firstName" name="firstName" />
+        <input
+          id="firstName" name="firstName"
+          onChange={e => setFirstName(e.target.value)}
+          value={firstName}
+        />
       </div>
 
       <div className={styles.formField}>
         <label htmlFor="firstName">
           Last Name:
         </label>
-        <input id="lastName" name="lastName" />
+        <input
+          id="lastName" name="lastName"
+          onChange={e => setLastName(e.target.value)}
+          value={lastName}
+        />
       </div>
 
       <div className={styles.formField}>
@@ -100,7 +121,10 @@ export default function SignupForm() {
         <input
           id="confirmPassword"
           name="confirmPassword"
-          type="password" />
+          type="password"
+          onChange={e => setPasswordConfirm(e.target.value)}
+          value={passwordConfirm}
+        />
       </div >
 
       <button

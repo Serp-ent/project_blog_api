@@ -48,11 +48,45 @@ const getAllUsers = async (req, res) => {
   }
 }
 
-// TODO:
+// firstName,
+// lastName,
+// email,
+// username,
+// password,
 const validateUserForm = [
+  body('firstName')
+    .trim()
+    .notEmpty().withMessage('First name is required')
+    .isLength({ min: 2 }).withMessage('First name must be at least 2 characters long'),
+
+  body('lastName')
+    .trim()
+    .notEmpty().withMessage('Last name is required')
+    .isLength({ min: 2 }).withMessage('Last name must be at least 2 characters long'),
+
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Invalid email address'),
+
+  body('username')
+    .trim()
+    .notEmpty().withMessage('Username is required')
+    .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')
+    .matches(/^[a-zA-Z0-9_]+$/).withMessage('Username can only contain letters, numbers, and underscores'),
+
   body('password')
     .trim()
-    .isLength({ min: 1 }).withMessage('Password must contain at least one character'),
+    .notEmpty().withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+    .matches(/\d/).withMessage('Password must contain at least one number')
+    .matches(/[!@#$%^&*]/).withMessage('Password must contain at least one special character (!@#$%^&*)'),
+
+  body('passwordConfirm')
+    .trim()
+    .notEmpty().withMessage('Password confirmation is required')
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage('Passwords must match'),
 ];
 
 const checkForValidationErrors = async (req, res, next) => {
@@ -69,7 +103,7 @@ const registerUser = [
   checkForValidationErrors,
   async (req, res) => {
     // TODO: add asyncHandler
-    // TODO: add validation
+    console.log(req.body)
     const {
       firstName,
       lastName,
