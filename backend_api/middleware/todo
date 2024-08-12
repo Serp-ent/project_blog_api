@@ -1,6 +1,5 @@
 TODO: authMiddleware
 TODO: errorHandler
-TODO: requestLogger
 
 TODO: add asyncHandler for every async function
 
