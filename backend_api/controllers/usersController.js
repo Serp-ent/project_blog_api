@@ -77,7 +77,7 @@ const registerUser = [
     } = req.body;
 
     // TODO: check if there is already user with given email and password
-    hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await userService.createUser({
       firstName, lastName, email, username, hashedPassword,

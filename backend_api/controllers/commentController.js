@@ -1,16 +1,13 @@
-const prisma = require('../db/prismaClient');
 const passport = require('../config/passport-cfg');
+const commentService = require('../services/commentService');
+const userService = require('../services/userService');
+const postService = require('../services/postsService');
 
 const updateComment = async (req, res) => {
   const { content } = req.body;
   const id = Number(req.params.id);
   try {
-    const updatedComment = await prisma.comment.update({
-      where: { id },
-      data: {
-        content,
-      }
-    });
+    const updatedComment = await commentService.updateComment(id, content);
 
     return res.json({ message: 'success', comment: updatedComment });
   } catch (err) {
@@ -24,9 +21,7 @@ const updateComment = async (req, res) => {
 const deleteComment = async (req, res) => {
   const id = Number(req.params.id);
   try {
-    await prisma.comment.delete({
-      where: { id },
-    });
+    commentService.deleteComment(id);
 
     return res.json({ message: "success" });
   } catch (err) {
@@ -40,14 +35,12 @@ const deleteComment = async (req, res) => {
 const getCommentsOfUser = async (req, res) => {
   const authorId = Number(req.params.id);
   try {
-    const userExist = await prisma.user.findUnique({ where: { id: authorId } });
+    const userExist = await userService.findUserById(authorId);
     if (!userExist) {
       return res.status(404).json({ status: 'error', error: 'No user with given id' });
     }
 
-    const comments = await prisma.comment.findMany({
-      where: { authorId },
-    });
+    const comments = await userService.getCommentsOfUser(authorId);
     res.json({ status: 'success', comments });
   } catch (err) {
     res.status(400).json({ error: `Error deleting user with id ${authorId} ${err.message}` });
@@ -58,25 +51,12 @@ const getCommentsUnderPost = async (req, res) => {
   const postId = Number(req.params.id);
   try {
     // Does post like this exists?
-    const exist = await prisma.post.findUnique({
-      where: { id: postId },
-    });
-    if (!exist) {
+    const post = await postService.findPostById(postId);
+    if (!post) {
       return res.status(404).json({ error: "No post with given id" });
     }
 
-    const comments = await prisma.comment.findMany({
-      where: { postId },
-      include: {
-        author: {
-          select: {
-            username: true,
-            // TODO :maybe avatar
-          }
-        }
-      },
-    });
-
+    const comments = await commentService.getCommentsUnderPost(postId);
     return res.json({ comments })
   } catch (err) {
     res.status(400).json({ error: `Internal server error ${err.message}` });
@@ -91,20 +71,7 @@ const addNewCommentUnderPost = [
     const postId = Number(req.params.id);
     const authorId = req.user.id;
     try {
-      const comment = await prisma.comment.create({
-        data: {
-          authorId,
-          postId,
-          content,
-        },
-        include: {
-          author: {
-            select: {
-              username: true,
-            }
-          }
-        }
-      });
+      const comment = await commentService.addComment(postId, authorId, content);
 
       res.json({
         status: 'success',
