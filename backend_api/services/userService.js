@@ -30,9 +30,29 @@ const createUser = async (userData) => {
   });
 }
 
-const findUserByUsername = async (username, { includePassword = false }) => {
+const findUserByUsername = async (username, options = {}) => {
+  const { includePassword = false } = options;
+
   return await prisma.user.findUnique({
     where: { username },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      username: true,
+      password: includePassword,
+      role: true,
+      registeredAt: true,
+    },
+  });
+}
+
+const findUserByEmail = async (email, options = {}) => {
+  const { includePassword = false } = options;
+
+  return await prisma.user.findUnique({
+    where: { email },
     select: {
       id: true,
       firstName: true,
@@ -89,4 +109,5 @@ module.exports = {
   getAllUsers,
   updateUser,
   deleteUserWithId,
+  findUserByEmail,
 }

@@ -7,6 +7,7 @@ const { authorizeUser } = require('../middleware/authorization');
 const userService = require('../services/userService');
 const { UnauthenticatedError, ValidationError, NotFoundError } = require("../errors/errors");
 const asyncHandler = require('express-async-handler');
+const checkUserExists = require("../middleware/checkUserExists");
 
 const loginUser = asyncHandler(async (req, res) => {
   // TODO: validate input
@@ -92,8 +93,8 @@ const checkForValidationErrors = asyncHandler(async (req, res, next) => {
 const registerUser = [
   validateUserForm,
   checkForValidationErrors,
+  checkUserExists,
   asyncHandler(async (req, res) => {
-    // TODO: add asyncHandler
     const {
       firstName,
       lastName,
@@ -102,13 +103,11 @@ const registerUser = [
       password,
     } = req.body;
 
-    // TODO: check if there is already user with given email and password
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await userService.createUser({
       firstName, lastName, email, username, hashedPassword,
     });
-    // TODO: maybe return jwt token the same as for login?
+
     const token = generateToken(user);
     res.json({ result: 'success', token });
   }),
@@ -128,7 +127,7 @@ const updateUserWithId = [
   // TODO: add validation
   passport.authenticate('jwt', { session: false }),
   authorizeUser,
-  async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { firstName, lastName } = req.body;
 
     const updatedData = {}
@@ -145,7 +144,7 @@ const updateUserWithId = [
       status: 'success',
       user: updatedUser,
     });
-  },
+  }),
 ]
 
 const deleteUserWithId = asyncHandler(async (req, res) => {
