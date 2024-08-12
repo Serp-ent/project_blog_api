@@ -1,73 +1,44 @@
+const { NotFoundError } = require('../errors/errors');
 const postService = require('../services/postService');
+const asyncHandler = require('express-async-handler');
 
-const getAllPosts = async (req, res) => {
-  try {
-    const posts = await postService.getAllPosts();
-    return res.json({ posts });
-  } catch (err) {
-    res.status(404).json({ error: `Cannot fetch posts ${err.message}` });
-  }
-}
+const getAllPosts = asyncHandler(async (req, res) => {
+  const posts = await postService.getAllPosts();
+  return res.json({ posts });
+});
 
-const createPost = async (req, res) => {
+const createPost = asyncHandler(async (req, res) => {
   const { title, content } = req.body;
   const authorId = req.user.id;
 
-  try {
-    const post = await postService.createPost(authorId, title, content);
-    res.json({ message: "success", post });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: "Failed to create post" });
-  }
-}
+  const post = await postService.createPost(authorId, title, content);
+  res.json({ message: "success", post });
+})
 
-const getPostWithId = async (req, res) => {
+const getPostWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
-  try {
-
-    const post = await postService.getPostWithId(id);
-
-    if (!post) {
-      return res.status(404).json({ error: `Post with id ${id} not found` });
-    }
-
-    return res.json({ message: "success", post });
-  } catch (err) {
-    return res.status(400).json({ error: `Internal server error ${err.message}` });
+  const post = await postService.getPostWithId(id);
+  if (!post) {
+    throw new NotFoundError(`Post with id ${id} not found`);
   }
-}
 
-const deletePostWithId = async (req, res) => {
+  return res.json({ message: "success", post });
+});
+
+const deletePostWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
-  try {
-    await postService.deletePostWithId(id);
+  await postService.deletePostWithId(id);
+  return res.json({ message: 'post deleted' });
+})
 
-    return res.json({ message: 'post deleted' });
-  } catch (err) {
-    if (err.code === 'P2025') {
-      return res.json({ message: 'post deleted' });
-    }
-
-    return res.status(400).json({ error: 'Internal server error' });
-  }
-}
-
-const publishPostWithId = async (req, res) => {
+const publishPostWithId = asyncHandler(async (req, res) => {
   // TODO: add query parameter to hide post
   const id = Number(req.params.id);
-  try {
-    const post = await postService.setPublishStateOfPost(id, true);
+  const post = await postService.setPublishStateOfPost(id, true);
 
-    const visibility = post.published ? 'published' : 'hidden';
-    return res.json({ message: `post ${id} is now ${visibility}` });
-  } catch (err) {
-    if (err.code === 'P2025') {
-      return res.json({ message: `Post with id ${id} not found` });
-    }
-    return res.json({ error: "Internal server error" });
-  }
-}
+  const visibility = post.published ? 'published' : 'hidden';
+  return res.json({ message: `post ${id} is now ${visibility}` });
+})
 
 const updatePostWithId = (req, res) => {
   // TODO: 
