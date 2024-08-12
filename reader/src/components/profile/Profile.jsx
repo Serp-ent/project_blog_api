@@ -15,6 +15,7 @@ export default function Profile() {
     }
   }, [user, id, navigate]);
 
+  // TODO: show comment of user in his profile
   const { data, loading, error } = useFetch(`http://localhost:3000/api/users/${id}`);
   if (error) {
     return <div>{error.message}</div>
