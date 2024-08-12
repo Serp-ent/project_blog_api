@@ -1,7 +1,7 @@
 const passport = require('../config/passport-cfg');
 const commentService = require('../services/commentService');
 const userService = require('../services/userService');
-const postService = require('../services/postsService');
+const postService = require('../services/postService');
 
 const updateComment = async (req, res) => {
   const { content } = req.body;

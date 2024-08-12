@@ -1,8 +1,8 @@
-const prisma = require('../db/prismaClient')
+const postService = require('../services/postService');
 
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany({});
+    const posts = await postService.getAllPosts();
     return res.json({ posts });
   } catch (err) {
     res.status(404).json({ error: `Cannot fetch posts ${err.message}` });
@@ -14,14 +14,7 @@ const createPost = async (req, res) => {
   const authorId = req.user.id;
 
   try {
-    const post = await prisma.post.create({
-      data: {
-        authorId,
-        title,
-        content,
-      }
-    });
-
+    const post = await postService.createPost(authorId, title, content);
     res.json({ message: "success", post });
   } catch (err) {
     console.log(err);
@@ -32,9 +25,8 @@ const createPost = async (req, res) => {
 const getPostWithId = async (req, res) => {
   const id = Number(req.params.id);
   try {
-    const post = await prisma.post.findUnique({
-      where: { id }
-    });
+
+    const post = await postService.getPostWithId(id);
 
     if (!post) {
       return res.status(404).json({ error: `Post with id ${id} not found` });
@@ -49,9 +41,7 @@ const getPostWithId = async (req, res) => {
 const deletePostWithId = async (req, res) => {
   const id = Number(req.params.id);
   try {
-    await prisma.post.delete({
-      where: { id }
-    });
+    await postService.deletePostWithId(id);
 
     return res.json({ message: 'post deleted' });
   } catch (err) {
@@ -67,12 +57,7 @@ const publishPostWithId = async (req, res) => {
   // TODO: add query parameter to hide post
   const id = Number(req.params.id);
   try {
-    const post = await prisma.post.update({
-      where: { id },
-      data: {
-        published: true,
-      }
-    });
+    const post = await postService.setPublishStateOfPost(id, true);
 
     const visibility = post.published ? 'published' : 'hidden';
     return res.json({ message: `post ${id} is now ${visibility}` });
