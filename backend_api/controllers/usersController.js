@@ -85,7 +85,8 @@ const registerUser = [
       firstName, lastName, email, username, hashedPassword,
     });
     // TODO: maybe return jwt token the same as for login?
-    res.json({ result: 'success' });
+    const token = generateToken(user);
+    res.json({ result: 'success', token });
   },
 ]
 
