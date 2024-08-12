@@ -30,3 +30,6 @@ app.get('/editor', checkRole(['editor']), (req, res) => {
 
  TODO: services should manage authentication and authorization logic
  such as generating and validating JWT tokens
+
+ TODO: improve validation
+ TODO: middleware for common operations such as checkUserExists or authorize user
