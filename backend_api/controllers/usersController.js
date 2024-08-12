@@ -5,48 +5,38 @@ const passport = require('../config/passport-cfg');
 const { body, validationResult } = require('express-validator');
 const { authorizeUser } = require('../middleware/authorization');
 const userService = require('../services/userService');
+const { UnauthenticatedError, ValidationError, NotFoundError } = require("../errors/errors");
+const asyncHandler = require('express-async-handler');
 
-
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   // TODO: validate input
   const { name, password } = req.body
   if (!name || !password) {
     return res.status(400).json({ error: 'name and password is required' });
   }
 
-  try {
-    const user = await userService.findUserByUsername(name, { includePassword: true });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid name or password" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid name or password" });
-    }
-
-    // valid credentials
-    const token = generateToken(user);
-    return res.status(200).json({ token });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal server error" });
+  const user = await userService.findUserByUsername(name, { includePassword: true });
+  if (!user) {
+    throw new UnauthenticatedError('Invalid name or password');
   }
-}
 
-const getAllUsers = async (req, res) => {
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new UnauthenticatedError('Invalid name or password');
+  }
+
+  // valid credentials
+  const token = generateToken(user);
+  return res.status(200).json({ token });
+})
+
+const getAllUsers = asyncHandler(async (req, res) => {
   const { role } = req.query;
   const authorFilter = role?.toLowerCase() === 'author' ? 'AUTHOR' : undefined;
-
   // TODO: add pagination
-  try {
-    const users = await userService.getAllUsers(authorFilter);
-
-    return res.status(200).json({ status: 'success', users });
-  } catch (err) {
-    return res.status(400).json({ error: 'Cannot fetch users data' });
-  }
-}
+  const users = await userService.getAllUsers(authorFilter);
+  return res.status(200).json({ status: 'success', users });
+})
 
 // firstName,
 // lastName,
@@ -89,21 +79,21 @@ const validateUserForm = [
     .withMessage('Passwords must match'),
 ];
 
-const checkForValidationErrors = async (req, res, next) => {
+const checkForValidationErrors = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    // throw only the first error
+    throw new ValidationError(errors.array().at(0).msg);
   }
 
   next();
-};
+});
 
 const registerUser = [
   validateUserForm,
   checkForValidationErrors,
-  async (req, res) => {
+  asyncHandler(async (req, res) => {
     // TODO: add asyncHandler
-    console.log(req.body)
     const {
       firstName,
       lastName,
@@ -121,22 +111,18 @@ const registerUser = [
     // TODO: maybe return jwt token the same as for login?
     const token = generateToken(user);
     res.json({ result: 'success', token });
-  },
+  }),
 ]
 
-const getUserWithId = async (req, res) => {
+const getUserWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
-  try {
-    const user = await userService.findUserById(id);
-    if (!user) {
-      return res.status(404).json({ error: `user with id ${id} not found` });
-    }
-
-    return res.json({ status: 'success', user });
-  } catch (err) {
-    res.status(400).json({ error: 'An error occurred while fetching the user' });
+  const user = await userService.findUserById(id);
+  if (!user) {
+    throw new NotFoundError(`user with id ${id} not found`);
   }
-}
+
+  return res.json({ status: 'success', user });
+})
 
 const updateUserWithId = [
   // TODO: add validation
@@ -162,15 +148,11 @@ const updateUserWithId = [
   },
 ]
 
-const deleteUserWithId = async (req, res) => {
+const deleteUserWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
-  try {
-    await userService.deleteUserWithId(id);
-    res.json({ message: `User with id ${id} deleted successfully` });
-  } catch (err) {
-    res.status(400).json({ error: `Error deleting user with id ${id}` });
-  }
-}
+  await userService.deleteUserWithId(id);
+  res.json({ message: `User with id ${id} deleted successfully` });
+})
 
 module.exports = {
   loginUser,

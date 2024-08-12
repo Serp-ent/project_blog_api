@@ -36,8 +36,8 @@ export default function SignupForm() {
       });
 
       if (!response.ok) {
-        const errors = (await response.json()).errors;
-        throw new Error(errors.at(0).msg); // throw first error
+        const result = (await response.json());
+        throw new Error(result.message); // throw first error
       }
 
       const result = await response.json();
