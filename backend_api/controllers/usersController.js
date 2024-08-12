@@ -113,6 +113,7 @@ const registerUser = [
   }),
 ]
 
+// TODO: maybe split logic to check if user exists
 const getUserWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
   const user = await userService.findUserById(id);
@@ -123,6 +124,7 @@ const getUserWithId = asyncHandler(async (req, res) => {
   return res.json({ status: 'success', user });
 })
 
+// TODO: maybe split logic to check if user exists
 const updateUserWithId = [
   // TODO: add validation
   passport.authenticate('jwt', { session: false }),
@@ -147,6 +149,7 @@ const updateUserWithId = [
   }),
 ]
 
+// TODO: maybe split logic to check if user exists
 const deleteUserWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
   await userService.deleteUserWithId(id);

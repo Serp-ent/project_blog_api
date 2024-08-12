@@ -30,6 +30,7 @@ const getCommentsOfUser = asyncHandler(async (req, res) => {
   res.json({ status: 'success', comments });
 });
 
+// TODO: middleware check if given post exist 
 const getCommentsUnderPost = asyncHandler(async (req, res) => {
   const postId = Number(req.params.id);
   // Does post like this exists?
