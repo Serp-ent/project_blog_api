@@ -176,6 +176,96 @@ describe('users GET /', () => {
   })
 })
 
+describe('User GET /id', () => {
+  it("Should return user 1", async () => {
+    const response = await request(app)
+      .get('/1')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('user');
+
+    // setup
+    const user = testUsers.at(0);  // Postgresql starts counting from 1
+    const { password, ...rest } = user;
+    const want = rest;
+    want.id = 1;
+
+    const { registeredAt, ...got } = response.body.user;
+    console.log(got);
+    console.log(want);
+
+    expect(got).toEqual(want);
+  })
+
+  it("Should return user 2", async () => {
+    const response = await request(app)
+      .get('/2')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('user');
+
+    // setup
+    const user = testUsers.at(1);  // Postgresql starts counting from 1
+    const { password, ...rest } = user;
+    const want = rest;
+    want.id = 2;
+
+    const { registeredAt, ...got } = response.body.user;
+    console.log(got);
+    console.log(want);
+
+    expect(got).toEqual(want);
+  })
+
+  it("Should return error for non-numeric ID", async () => {
+    const response = await request(app)
+      .get('/abc')
+      .expect('Content-Type', /json/)
+      .expect(400); // Assuming the server responds with 400 for bad requests
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Invalid ID'); // Adjust according to your error message
+  });
+
+  it("Should return error for negative ID", async () => {
+    const response = await request(app)
+      .get('/-1')
+      .expect('Content-Type', /json/)
+      .expect(404); // Assuming the server responds with 404 for not found
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+
+  it("Should return error for ID 0", async () => {
+    const response = await request(app)
+      .get('/0')
+      .expect('Content-Type', /json/)
+      .expect(404); // Assuming the server responds with 404 for not found
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+
+  it("Should return error for non-existent ID 10", async () => {
+    const response = await request(app)
+      .get('/10')
+      .expect('Content-Type', /json/)
+      .expect(404); // Assuming the server responds with 404 for not found
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+})
+
 // test('user route works', done => {
 //   request(app)
 //     .get("/")

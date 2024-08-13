@@ -122,10 +122,15 @@ const registerUser = [
 
 // TODO: maybe split logic to check if user exists
 const getUserWithId = asyncHandler(async (req, res) => {
+  // TODO: middleware for parsing id to Number
   const id = Number(req.params.id);
+  if (isNaN(id)) {
+    throw new ValidationError('Invalid ID - not a number');
+  }
+
   const user = await userService.findUserById(id);
   if (!user) {
-    throw new NotFoundError(`user with id ${id} not found`);
+    throw new NotFoundError(`User not found`);
   }
 
   return res.json({ status: 'success', user });
