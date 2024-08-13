@@ -5,9 +5,12 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const app = express();
 const prisma = require('../db/prismaClient');
+const { errorHandler } = require('../utilities/errorHandler');
 
 app.use(express.urlencoded({ extended: false }));
 app.use('/', userRouter);
+
+app.use(errorHandler);
 
 const testUsers = [
   {
@@ -62,11 +65,6 @@ const prepareUsers = async () => {
 }
 
 beforeEach(async () => {
-  // In test id should be ignored, but prevents large ids 
-
-  // make sure to fresh start
-  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
-
   const users = await prepareUsers();
   await prisma.user.createMany({
     data: users,
@@ -76,6 +74,7 @@ beforeEach(async () => {
 afterEach(async () => {
   // cleanup
   await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
+  // In test id should be ignored, but prevents large ids 
 })
 
 describe('users GET /', () => {
@@ -87,14 +86,93 @@ describe('users GET /', () => {
 
     expect(response.body).toHaveProperty('status', 'success');
     expect(response.body).toHaveProperty('users');
+    expect(Array.isArray(response.body.users)).toBeTruthy();
 
     // Remove unnecessary fields from the expected users
-    const expectedUsers = testUsers.map(({ password, ...user }) => user).sort((a, b) => a.email.localeCompare(b.email));
+    const expectedUsers = testUsers.map(({ password, ...user }) => user)
+      .sort((a, b) => a.email.localeCompare(b.email));
     // Sort both the expected and received users by a common field (e.g., email)
-    const receivedUsers = response.body.users.map(({ password, id, registeredAt, ...user }) => user).sort((a, b) => a.email.localeCompare(b.email));
+    const receivedUsers = response.body.users
+      .map(({ password, id, registeredAt, ...user }) => user)
+      .sort((a, b) => a.email.localeCompare(b.email));
 
     // Check that the response contains the correct users
     expect(receivedUsers).toEqual(expectedUsers);
+  })
+
+
+  it("Should return only Authors with status 200", async () => {
+    const response = await request(app)
+      .get('/?role=AUTHOR')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('users');
+    expect(Array.isArray(response.body.users)).toBeTruthy();
+
+    // Remove unnecessary fields from the expected users
+    const expectedUsers = testUsers
+      .filter(user => user.role === 'AUTHOR')
+      .map(({ password, ...user }) => user)
+      .sort((a, b) => a.email.localeCompare(b.email));
+
+    // Sort both the expected and received users by a common field (e.g., email)
+    const receivedUsers = response.body.users
+      .map(({ password, id, registeredAt, ...user }) => user)
+      .sort((a, b) => a.email.localeCompare(b.email));
+
+    // Check that the response contains the correct users
+    expect(receivedUsers).toEqual(expectedUsers);
+  })
+
+  it("Should return only Readers with status 200", async () => {
+    const response = await request(app)
+      .get('/?role=reader')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('users');
+    expect(Array.isArray(response.body.users)).toBeTruthy();
+
+    // Remove unnecessary fields from the expected users
+    const expectedUsers = testUsers
+      .filter(user => user.role === 'READER')
+      .map(({ password, ...user }) => user)
+      .sort((a, b) => a.email.localeCompare(b.email));
+
+    // Sort both the expected and received users by a common field (e.g., email)
+    const receivedUsers = response.body.users
+      .map(({ password, id, registeredAt, ...user }) => user)
+      .sort((a, b) => a.email.localeCompare(b.email));
+
+    // Check that the response contains the correct users
+    expect(receivedUsers).toEqual(expectedUsers);
+  })
+
+  it("Should handle empty database with status 200", async () => {
+    await prisma.user.deleteMany();
+
+    const response = await request(app)
+      .get('/')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('users');
+    expect(response.body.users).toEqual([]);
+  })
+
+  it("Should handle invalid role query parameter", async () => {
+    const response = await request(app)
+      .get('/?role=INVALID_ROLE')
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    expect(response.body).toHaveProperty('status', 'error')
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Invalid role')
   })
 })
 

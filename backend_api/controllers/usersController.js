@@ -5,7 +5,7 @@ const passport = require('../config/passport-cfg');
 const { body, validationResult } = require('express-validator');
 const { authorizeUser } = require('../middleware/authorization');
 const userService = require('../services/userService');
-const { UnauthenticatedError, ValidationError, NotFoundError } = require("../errors/errors");
+const { UnauthenticatedError, ValidationError, NotFoundError, AppError } = require("../errors/errors");
 const asyncHandler = require('express-async-handler');
 const checkUserExists = require("../middleware/checkUserExists");
 
@@ -33,9 +33,16 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const getAllUsers = asyncHandler(async (req, res) => {
   const { role } = req.query;
-  const authorFilter = role?.toLowerCase() === 'author' ? 'AUTHOR' : undefined;
+  // TODO: getValidRoles from the database
+  const validRoles = ['AUTHOR', 'READER']
+
+  const roleFilter = role?.toUpperCase();
+  if (role && !validRoles.includes(roleFilter)) {
+    throw new AppError('Invalid role query parameter', 400);
+  }
+
   // TODO: add pagination
-  const users = await userService.getAllUsers(authorFilter);
+  const users = await userService.getAllUsers(roleFilter);
   return res.status(200).json({ status: 'success', users });
 })
 
