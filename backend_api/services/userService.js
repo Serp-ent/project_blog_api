@@ -99,7 +99,7 @@ const updateUser = async (id, { includePassword = false, ...updatedData }) => {
 }
 
 const deleteUserWithId = async (id) => {
-  await prisma.user.delete({ where: { id } });
+  return await prisma.user.delete({ where: { id } });
 }
 
 module.exports = {

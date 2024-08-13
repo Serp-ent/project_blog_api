@@ -193,8 +193,6 @@ describe('User GET /id', () => {
     want.id = 1;
 
     const { registeredAt, ...got } = response.body.user;
-    console.log(got);
-    console.log(want);
 
     expect(got).toEqual(want);
   })
@@ -215,8 +213,6 @@ describe('User GET /id', () => {
     want.id = 2;
 
     const { registeredAt, ...got } = response.body.user;
-    console.log(got);
-    console.log(want);
 
     expect(got).toEqual(want);
   })
@@ -265,6 +261,93 @@ describe('User GET /id', () => {
     expect(response.body.message).toContain('User not found'); // Adjust according to your error message
   });
 })
+
+describe('User DELETE /:id', () => {
+  it("Should delete user 1 and return success", async () => {
+    const response = await request(app)
+      .delete('/1')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('message', 'User deleted successfully'); // Adjust according to your success message
+
+    // Verify user is deleted
+    const checkResponse = await request(app)
+      .get('/1')
+      .expect('Content-Type', /json/)
+      .expect(404);
+
+    expect(checkResponse.body).toHaveProperty('status', 'error');
+    expect(checkResponse.body).toHaveProperty('message');
+    expect(checkResponse.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+
+  it("Should delete user 2 and return success", async () => {
+    const response = await request(app)
+      .delete('/2')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('message', 'User deleted successfully'); // Adjust according to your success message
+
+    // Verify user is deleted
+    const checkResponse = await request(app)
+      .get('/2')
+      .expect('Content-Type', /json/)
+      .expect(404);
+
+    expect(checkResponse.body).toHaveProperty('status', 'error');
+    expect(checkResponse.body).toHaveProperty('message');
+    expect(checkResponse.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+
+  it("Should return error for non-numeric ID", async () => {
+    const response = await request(app)
+      .delete('/abc')
+      .expect('Content-Type', /json/)
+      .expect(400); // Assuming the server responds with 400 for bad requests
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Invalid ID'); // Adjust according to your error message
+  });
+
+  it("Should return error for negative ID", async () => {
+    const response = await request(app)
+      .delete('/-1')
+      .expect('Content-Type', /json/)
+      .expect(404); // Assuming the server responds with 404 for not found
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+
+  it("Should return error for non-existent ID 0", async () => {
+    const response = await request(app)
+      .delete('/0')
+      .expect('Content-Type', /json/)
+      .expect(404); // Assuming the server responds with 404 for not found
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+
+  it("Should return error for non-existent ID 10", async () => {
+    const response = await request(app)
+      .delete('/10')
+      .expect('Content-Type', /json/)
+      .expect(404); // Assuming the server responds with 404 for not found
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('User not found'); // Adjust according to your error message
+  });
+});
+
 
 // test('user route works', done => {
 //   request(app)

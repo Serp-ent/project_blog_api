@@ -8,6 +8,7 @@ const userService = require('../services/userService');
 const { UnauthenticatedError, ValidationError, NotFoundError, AppError } = require("../errors/errors");
 const asyncHandler = require('express-async-handler');
 const checkUserExists = require("../middleware/checkUserExists");
+const { ensureIdIsNumber } = require("../middleware/ensureIdIsNumber");
 
 const loginUser = asyncHandler(async (req, res) => {
   // TODO: validate input
@@ -121,20 +122,19 @@ const registerUser = [
 ]
 
 // TODO: maybe split logic to check if user exists
-const getUserWithId = asyncHandler(async (req, res) => {
-  // TODO: middleware for parsing id to Number
-  const id = Number(req.params.id);
-  if (isNaN(id)) {
-    throw new ValidationError('Invalid ID - not a number');
-  }
+const getUserWithId = [
+  ensureIdIsNumber,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const user = await userService.findUserById(id);
+    if (!user) {
+      throw new NotFoundError(`User not found`);
+    }
 
-  const user = await userService.findUserById(id);
-  if (!user) {
-    throw new NotFoundError(`User not found`);
+    return res.json({ status: 'success', user });
   }
-
-  return res.json({ status: 'success', user });
-})
+  )
+]
 
 // TODO: maybe split logic to check if user exists
 const updateUserWithId = [
@@ -162,11 +162,23 @@ const updateUserWithId = [
 ]
 
 // TODO: maybe split logic to check if user exists
-const deleteUserWithId = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
-  await userService.deleteUserWithId(id);
-  res.json({ message: `User with id ${id} deleted successfully` });
-})
+const deleteUserWithId = [
+  ensureIdIsNumber,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+    await userService.deleteUserWithId(id);
+    } catch (err) {
+      if (err.code === 'P2025') {
+        throw new NotFoundError('User not found');
+      }
+      throw err;
+    }
+
+    res.json({ status: 'success', message: 'User deleted successfully' });
+  })
+]
 
 module.exports = {
   loginUser,
