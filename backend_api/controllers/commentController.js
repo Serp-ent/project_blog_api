@@ -4,6 +4,7 @@ const userService = require('../services/userService');
 const postService = require('../services/postService');
 const asyncHandler = require('express-async-handler');
 const { NotFoundError } = require('../errors/errors');
+const { ensureIdIsNumber } = require('../middleware/ensureIdIsNumber');
 
 const updateComment = asyncHandler(async (req, res) => {
   const { content } = req.body;
@@ -31,17 +32,20 @@ const getCommentsOfUser = asyncHandler(async (req, res) => {
 });
 
 // TODO: middleware check if given post exist 
-const getCommentsUnderPost = asyncHandler(async (req, res) => {
-  const postId = Number(req.params.id);
-  // Does post like this exists?
-  const post = await postService.findPostById(postId);
-  if (!post) {
-    throw new NotFoundError("No post with given id");
-  }
+const getCommentsUnderPost = [
+  ensureIdIsNumber,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    // Does post like this exists?
+    const post = await postService.findPostById(id);
+    if (!post) {
+      throw new NotFoundError('Post not found');
+    }
 
-  const comments = await commentService.getCommentsUnderPost(postId);
-  return res.json({ comments })
-});
+    const comments = await commentService.getCommentsUnderPost(id);
+    return res.json({ status: 'success', comments })
+  })
+];
 
 const addNewCommentUnderPost = [
   passport.authenticate('jwt', { session: false }),

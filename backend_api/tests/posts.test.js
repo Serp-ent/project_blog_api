@@ -29,6 +29,7 @@ afterEach(async () => {
   await prisma.comment.deleteMany({});
   await prisma.post.deleteMany({});
   await prisma.user.deleteMany({});
+  // start counting from 0
 });
 
 describe('posts GET /', () => {
@@ -129,3 +130,94 @@ describe('posts GET /:id', () => {
     expect(response.body.message).toContain('Post not found'); // Adjust according to your error message
   });
 })
+
+describe('GET /:id/comments', () => {
+  it('Should return comments for a valid post ID', async () => {
+    const response = await request(app)
+      .get('/1/comments')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('comments');
+    expect(Array.isArray(response.body.comments)).toBe(true);
+
+    const expectedComments = [
+      {
+        id: 1,
+        authorId: 1,
+        postId: 1,
+        content: 'Great post!',
+        createdAt: '2024-08-13T14:00:00.000Z',
+        author: { username: 'johndoe' },
+      },
+      {
+        id: 2,
+        authorId: 3,
+        postId: 1,
+        content: 'Very informative.',
+        createdAt: '2024-08-13T15:00:00.000Z',
+        author: { username: 'alicesmith' },
+      },
+    ];
+
+    const receivedComments = response.body.comments;
+
+    expect(receivedComments).toEqual(expectedComments);
+  });
+
+  it('Should return an empty array if no comments exist for the post', async () => {
+    const response = await request(app)
+      .get('/5/comments')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('comments');
+    expect(response.body.comments).toEqual([]);
+  });
+
+  it('Should return a 404 error for a non-existent post ID', async () => {
+    const response = await request(app)
+      .get('/999/comments')
+      .expect('Content-Type', /json/)
+      .expect(404);
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Post not found');
+  });
+
+  it('Should return a 400 error for an invalid post ID', async () => {
+    const response = await request(app)
+      .get('/abc/comments')
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Invalid ID');
+  });
+
+  it('Should return a 404 error for a negative post ID', async () => {
+    const response = await request(app)
+      .get('/-1/comments')
+      .expect('Content-Type', /json/)
+      .expect(404);
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Post not found');
+  });
+
+  it('Should return a 404 error for ID 0', async () => {
+    const response = await request(app)
+      .get('/0/comments')
+      .expect('Content-Type', /json/)
+      .expect(404);
+
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('Post not found');
+  });
+});
