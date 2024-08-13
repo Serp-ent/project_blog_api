@@ -5,7 +5,12 @@ const express = require('express');
 const app = express();
 const prisma = require('../db/prismaClient');
 const { errorHandler } = require('../utilities/errorHandler');
-const { testUsers, getUsersWithHashedPasswords } = require('./usersTestData');
+const {
+  testUsers,
+  testPosts,
+  testComments,
+  getUsersWithHashedPasswords
+} = require('./testData');
 
 app.use(express.urlencoded({ extended: false }));
 app.use('/', userRouter);
@@ -13,16 +18,12 @@ app.use('/', userRouter);
 app.use(errorHandler);
 
 beforeEach(async () => {
-  const users = await getUsersWithHashedPasswords();
-  await prisma.user.createMany({
-    data: users,
-  });
+  await prisma.user.createMany({ data: testUsers });
 });
 
 afterEach(async () => {
   // cleanup
-  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
-  // In test id should be ignored, but prevents large ids 
+  await prisma.user.deleteMany();
 })
 
 describe('users GET /', () => {

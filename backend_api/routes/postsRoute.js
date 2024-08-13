@@ -5,7 +5,6 @@ const controller = require('../controllers/postsController');
 const commentController = require('../controllers/commentController');
 
 // TODO: add authentication
-
 postsRoute.get('/', controller.getAllPosts);
 postsRoute.post('/', controller.createPost);
 

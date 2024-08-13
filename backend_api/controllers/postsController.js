@@ -1,10 +1,11 @@
 const { NotFoundError } = require('../errors/errors');
+const { ensureIdIsNumber } = require('../middleware/ensureIdIsNumber');
 const postService = require('../services/postService');
 const asyncHandler = require('express-async-handler');
 
 const getAllPosts = asyncHandler(async (req, res) => {
   const posts = await postService.getAllPosts();
-  return res.json({ posts });
+  return res.json({ status: 'success', posts });
 });
 
 const createPost = asyncHandler(async (req, res) => {
@@ -15,15 +16,18 @@ const createPost = asyncHandler(async (req, res) => {
   res.json({ message: "success", post });
 })
 
-const getPostWithId = asyncHandler(async (req, res) => {
-  const id = Number(req.params.id);
-  const post = await postService.getPostWithId(id);
-  if (!post) {
-    throw new NotFoundError(`Post with id ${id} not found`);
-  }
+const getPostWithId = [
+  ensureIdIsNumber,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const post = await postService.getPostWithId(id);
+    if (!post) {
+      throw new NotFoundError('Post not found');
+    }
 
-  return res.json({ message: "success", post });
-});
+    return res.json({ status: "success", post });
+  })
+];
 
 const deletePostWithId = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
