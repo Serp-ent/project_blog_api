@@ -18,6 +18,10 @@ app.use('/', postRouter);
 app.use(errorHandler);
 
 beforeEach(async () => {
+  await prisma.comment.deleteMany({});
+  await prisma.post.deleteMany({});
+  await prisma.user.deleteMany({});
+
   // Insert users, posts, and comments into the database
   await prisma.user.createMany({ data: testUsers });
   await prisma.post.createMany({ data: testPosts });
