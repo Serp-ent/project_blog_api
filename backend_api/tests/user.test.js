@@ -2,70 +2,18 @@ const userRouter = require('../routes/usersRoute');
 
 const request = require('supertest');
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const app = express();
 const prisma = require('../db/prismaClient');
 const { errorHandler } = require('../utilities/errorHandler');
+const { testUsers, getUsersWithHashedPasswords } = require('./usersTestData');
 
 app.use(express.urlencoded({ extended: false }));
 app.use('/', userRouter);
 
 app.use(errorHandler);
 
-const testUsers = [
-  {
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    username: 'johndoe',
-    password: 'password123',
-    role: 'READER',
-  },
-  {
-    firstName: 'Jane',
-    lastName: 'Doe',
-    email: 'jane.doe@example.com',
-    username: 'janedoe',
-    password: 'password123',
-    role: 'AUTHOR',
-  },
-  {
-    firstName: 'Alice',
-    lastName: 'Smith',
-    email: 'alice.smith@example.com',
-    username: 'alicesmith',
-    password: 'password123',
-    role: 'READER',
-  },
-  {
-    firstName: 'Bob',
-    lastName: 'Johnson',
-    email: 'bob.johnson@example.com',
-    username: 'bobjohnson',
-    password: 'password123',
-    role: 'AUTHOR',
-  },
-  {
-    firstName: 'Charlie',
-    lastName: 'Brown',
-    email: 'charlie.brown@example.com',
-    username: 'charliebrown',
-    password: 'password123',
-    role: 'READER',
-  },
-];
-
-const prepareUsers = async () => {
-  return Promise.all(
-    testUsers.map(async user => ({
-      ...user,
-      password: await bcrypt.hash(user.password, 10), // Hash passwords if necessary
-    }))
-  );
-}
-
 beforeEach(async () => {
-  const users = await prepareUsers();
+  const users = await getUsersWithHashedPasswords();
   await prisma.user.createMany({
     data: users,
   });
@@ -93,7 +41,7 @@ describe('users GET /', () => {
       .sort((a, b) => a.email.localeCompare(b.email));
     // Sort both the expected and received users by a common field (e.g., email)
     const receivedUsers = response.body.users
-      .map(({ password, id, registeredAt, ...user }) => user)
+      .map(({ password, ...user }) => user)
       .sort((a, b) => a.email.localeCompare(b.email));
 
     // Check that the response contains the correct users
@@ -119,7 +67,7 @@ describe('users GET /', () => {
 
     // Sort both the expected and received users by a common field (e.g., email)
     const receivedUsers = response.body.users
-      .map(({ password, id, registeredAt, ...user }) => user)
+      .map(({ password, ...user }) => user)
       .sort((a, b) => a.email.localeCompare(b.email));
 
     // Check that the response contains the correct users
@@ -144,7 +92,7 @@ describe('users GET /', () => {
 
     // Sort both the expected and received users by a common field (e.g., email)
     const receivedUsers = response.body.users
-      .map(({ password, id, registeredAt, ...user }) => user)
+      .map(({ password, ...user }) => user)
       .sort((a, b) => a.email.localeCompare(b.email));
 
     // Check that the response contains the correct users
@@ -186,13 +134,10 @@ describe('User GET /id', () => {
     expect(response.body).toHaveProperty('status', 'success');
     expect(response.body).toHaveProperty('user');
 
-    // setup
-    const user = testUsers.at(0);  // Postgresql starts counting from 1
-    const { password, ...rest } = user;
-    const want = rest;
-    want.id = 1;
+    const user = testUsers.find(user => user.id === 1);
+    const { password, ...want } = user;
 
-    const { registeredAt, ...got } = response.body.user;
+    const got = response.body.user;
 
     expect(got).toEqual(want);
   })
@@ -207,13 +152,10 @@ describe('User GET /id', () => {
     expect(response.body).toHaveProperty('user');
 
     // setup
-    const user = testUsers.at(1);  // Postgresql starts counting from 1
-    const { password, ...rest } = user;
-    const want = rest;
-    want.id = 2;
+    const user = testUsers.find(user => user.id === 2);
+    const { password, ...want } = user;
 
-    const { registeredAt, ...got } = response.body.user;
-
+    const got = response.body.user;
     expect(got).toEqual(want);
   })
 
