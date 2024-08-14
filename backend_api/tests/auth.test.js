@@ -1,10 +1,12 @@
 const request = require('supertest');
 const prisma = require('../db/prismaClient');
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const app = express();
 const passport = require('passport');
 const { registerUser, loginUser } = require('../controllers/usersController');
 const { errorHandler } = require('../utilities/errorHandler');
+const { checkRole } = require('../middleware/authorization');
 
 // Initialize routes and middleware
 app.use(express.json());
@@ -20,6 +22,18 @@ app.get('/protected',
   }
 );
 
+afterAll(async () => {
+  // Clear whole data
+  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
+})
+
+app.get('/protectedAuthors',
+  passport.authenticate('jwt', { session: false }),
+  checkRole(['AUTHOR']),
+  (req, res) => {
+    res.json({ status: 'success', message: 'Authenticated' });
+  }
+)
 
 app.use(errorHandler);
 
@@ -56,16 +70,12 @@ describe('Authentication Tests', () => {
   });
 
   it('Should authenticate with valid credentials', async () => {
-    console.log('authtoken', authToken)
     const response = await request(app)
       .get('/protected')
       .set('Authorization', `Bearer ${authToken}`)
-    // .expect('Content-Type', /json/)
-    // .expect(200);
+      .expect('Content-Type', /json/)
+      .expect(200);
 
-    console.log('body', response.status)
-    console.log('body', response.body)
-    console.log('header', response.headers)
     expect(response.body).toHaveProperty('status', 'success');
     expect(response.body).toHaveProperty('message', 'Authenticated');
   });
@@ -79,6 +89,89 @@ describe('Authentication Tests', () => {
   it('should return 401 for incorrect token requests', async () => {
     const response = await request(app)
       .get('/protected')
+      .set('Authorization', 'Bearer InvalidToken')
+      .expect(401)
+  });
+});
+
+describe('Authors only section', () => {
+  let authorAuthToken;
+  let readerAuthToken;
+  beforeAll(async () => {
+    // Register a user
+    await prisma.user.create({
+      data: {
+        firstName: 'John',        // Optional, can be null
+        lastName: 'Doe',          // Optional, can be null
+        email: 'john.doe@example.com', // Required, must be unique
+        username: 'author',      // Required, must be unique
+        password: bcrypt.hashSync('author', 10),
+        role: 'AUTHOR',           // Setting the role to AUTHOR
+        registeredAt: new Date(), // Optional, defaults to now() if not provided
+      },
+    });
+
+    await prisma.user.create({
+      data: {
+        firstName: 'John',        // Optional, can be null
+        lastName: 'Doe',          // Optional, can be null
+        email: 'plainUser.doe@example.com', // Required, must be unique
+        username: 'reader',      // Required, must be unique
+        password: bcrypt.hashSync('reader', 10),
+        role: 'READER',           // Setting the role to AUTHOR
+        registeredAt: new Date(), // Optional, defaults to now() if not provided
+      },
+    });
+
+    // Login to get a token
+    const authorResponse = await request(app)
+      .post('/login')
+      .send({
+        name: 'author',
+        password: 'author'
+      })
+      .expect('Content-Type', /json/)
+      .expect(200);
+    authorAuthToken = authorResponse.body.token;
+
+    const readerResponse = await request(app)
+      .post('/login')
+      .send({
+        name: 'reader',
+        password: 'reader'
+      })
+      .expect('Content-Type', /json/)
+      .expect(200);
+    readerAuthToken = readerResponse.body.token;
+  });
+
+  it('Should authenticate with valid credentials', async () => {
+    const response = await request(app)
+      .get('/protectedAuthors')
+      .set('Authorization', `Bearer ${authorAuthToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('message', 'Authenticated');
+  });
+
+  it('Should unauthorize with reader account', async () => {
+    const response = await request(app)
+      .get('/protectedAuthors')
+      .set('Authorization', `Bearer ${readerAuthToken}`)
+      .expect(403);
+  });
+
+  it('should return 401 for unauthenticated requests', async () => {
+    const response = await request(app)
+      .get('/protectedAuthors')
+      .expect(401)
+  });
+
+  it('should return 401 for incorrect token requests', async () => {
+    const response = await request(app)
+      .get('/protectedAuthors')
       .set('Authorization', 'Bearer InvalidToken')
       .expect(401)
   });

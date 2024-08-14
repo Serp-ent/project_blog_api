@@ -1,3 +1,7 @@
+const prisma = require("../db/prismaClient");
+const { UnauthenticatedError, UnauthorizedError } = require("../errors/errors");
+const asyncHandler = require('express-async-handler');
+
 const authorizeUser = (req, res, next) => {
   if (!res.user) {
     return res.status(401).json({ error: 'Unauthenticated' });
@@ -10,16 +14,25 @@ const authorizeUser = (req, res, next) => {
   next();
 }
 
-const checkRole = (roles) => (req, res, next) => {
-  if (!res.user) {
-    return res.status(401).json({ error: 'Unauthenticated' });
+const checkRole = (roles) => asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    throw new UnauthenticatedError();
   }
 
-  if (!roles.includes(req.user.role)) {
-    return res.status(403).json({ error: 'Forbidden' });
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(req.user.id),
+    },
+    select: {
+      role: true,
+    }
+  })
+  if (!roles.includes(user.role.toUpperCase())) {
+    throw new UnauthorizedError();
   }
+
   next();
-};
+});
 
 
 module.exports = {
