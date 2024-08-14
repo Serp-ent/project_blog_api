@@ -82,9 +82,11 @@ const getAllUsers = async (role) => {
 }
 
 const updateUser = async (id, { includePassword = false, ...updatedData }) => {
+  const dataToUpdate = { ...updatedData };
+
   return await prisma.user.update({
     where: { id },
-    data: updatedData,
+    data: dataToUpdate,
     select: {
       id: true,
       firstName: true,

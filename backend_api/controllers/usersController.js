@@ -143,7 +143,6 @@ const updateUserWithId = [
   authorizeUser,
   asyncHandler(async (req, res) => {
     const { firstName, lastName } = req.body;
-
     const updatedData = {}
 
     if (firstName && firstName.trim()) {
@@ -153,7 +152,7 @@ const updateUserWithId = [
       updatedData.lastName = lastName.trim();
     }
 
-    const updatedUser = await userService.updateUser(req.user.id, ...updatedData);
+    const updatedUser = await userService.updateUser(req.user.id, updatedData);
     return res.json({
       status: 'success',
       user: updatedUser,
@@ -168,7 +167,7 @@ const deleteUserWithId = [
     const { id } = req.params;
 
     try {
-    await userService.deleteUserWithId(id);
+      await userService.deleteUserWithId(id);
     } catch (err) {
       if (err.code === 'P2025') {
         throw new NotFoundError('User not found');

@@ -3,12 +3,12 @@ const { UnauthenticatedError, UnauthorizedError } = require("../errors/errors");
 const asyncHandler = require('express-async-handler');
 
 const authorizeUser = (req, res, next) => {
-  if (!res.user) {
-    return res.status(401).json({ error: 'Unauthenticated' });
+  if (!req.user) {
+    throw new UnauthenticatedError();
   }
 
   if (req.user.id !== Number(req.params.id)) {
-    return res.status(403).json({ error: 'Unauthorized' });
+    throw new UnauthorizedError();
   }
 
   next();
