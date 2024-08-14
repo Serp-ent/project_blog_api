@@ -1,5 +1,12 @@
 export default function LoginPage() {
+  const handleLogin = () => {
+    console.log('Handling login');
+  }
+
   return (
-    <div>Login Page</div>
+  <div>
+    <h1>Login</h1>
+    <button onClick={handleLogin}>Log in</button>
+  </div>
   );
 }

@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from 'react-router-dom'
 import ErrorPage from './components/ErrorPage.jsx'
@@ -10,7 +11,12 @@ import Root from './components/Root.jsx'
 import RegisterPage from './components/RegisterPage.jsx'
 import CreatePost from './components/CreatePost.jsx'
 import PostsList from './components/PostsList.jsx'
+import { AuthProvider, useAuth } from './auth/Auth.jsx'
 
+function ProtectedRoute({ element }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? element : <Navigate to={'/login'} />
+}
 
 const router = createBrowserRouter([
   {
@@ -28,11 +34,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/create',
-        element: <CreatePost />
+        element: <ProtectedRoute element={<CreatePost />} />
       },
       {
         path: '/posts',
-        element: <PostsList />
+        element: <ProtectedRoute element={<PostsList />} />
       }
     ]
   },
@@ -40,6 +46,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}></RouterProvider>
-  </StrictMode>,
+    <AuthProvider>
+      <RouterProvider router={router}></RouterProvider>
+    </AuthProvider>
+  </StrictMode>
 )
