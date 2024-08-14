@@ -3,10 +3,13 @@ const { Router } = require('express');
 const postsRoute = Router();
 const controller = require('../controllers/postsController');
 const commentController = require('../controllers/commentController');
+const passport = require('../config/passport-cfg');
 
 // TODO: add authentication
 postsRoute.get('/', controller.getAllPosts);
-postsRoute.post('/', controller.createPost);
+
+postsRoute.post('/', passport.authenticate('jwt'),
+  controller.createPost);
 
 postsRoute.get('/:id', controller.getPostWithId);
 postsRoute.delete('/:id', controller.deletePostWithId);

@@ -1,7 +1,8 @@
-const { NotFoundError } = require('../errors/errors');
+const { NotFoundError, ValidationError } = require('../errors/errors');
 const { ensureIdIsNumber } = require('../middleware/ensureIdIsNumber');
 const postService = require('../services/postService');
 const asyncHandler = require('express-async-handler');
+const { body, validationResult } = require('express-validator');
 
 const getAllPosts = asyncHandler(async (req, res) => {
   let { page, limit } = req.query;
@@ -25,13 +26,39 @@ const getAllPosts = asyncHandler(async (req, res) => {
   });
 });
 
-const createPost = asyncHandler(async (req, res) => {
-  const { title, content } = req.body;
-  const authorId = req.user.id;
+// TODO: create distinct validation file 
+const validatePost = [
+  body('title')
+    .trim()
+    .notEmpty().withMessage('Title is required')
+    .isLength({ min: 5, max: 255 }).withMessage('Title must be at least 5 characters long and 255 at most'),
 
-  const post = await postService.createPost(authorId, title, content);
-  res.json({ message: "success", post });
-})
+  body('content')
+    .trim()
+    .notEmpty().withMessage('Content is required')
+    .isLength({ min: 20 }).withMessage('Content must be at least 20 characters long'),
+]
+
+const checkForValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new ValidationError(errors.array().at(0));
+  }
+
+  next();
+}
+
+const createPost = [
+  validatePost,
+  checkForValidationErrors,
+  asyncHandler(async (req, res) => {
+    const { title, content } = req.body;
+    const authorId = req.user.id;
+
+    const post = await postService.createPost(authorId, title, content);
+    res.json({ message: "success", post });
+  })
+]
 
 const getPostWithId = [
   ensureIdIsNumber,

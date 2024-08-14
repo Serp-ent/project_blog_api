@@ -1,4 +1,5 @@
 const postRouter = require('../routes/postsRoute');
+const { loginUser, registerUser } = require('../controllers/usersController');
 
 const request = require('supertest');
 const express = require('express');
@@ -12,13 +13,19 @@ const {
   getUsersWithHashedPasswords
 } = require('./testData');
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use('/', postRouter);
+app.use('/posts', postRouter);
+app.use('/register', registerUser);
 
 app.use(errorHandler);
 
 beforeEach(async () => {
   // Insert users, posts, and comments into the database
+  await prisma.comment.deleteMany({});
+  await prisma.post.deleteMany({});
+  await prisma.user.deleteMany({});
+
   await prisma.user.createMany({ data: testUsers });
   await prisma.post.createMany({ data: testPosts });
   await prisma.comment.createMany({ data: testComments });
@@ -35,7 +42,7 @@ afterEach(async () => {
 describe('posts GET /', () => {
   it('Should return all posts with status 200', async () => {
     const response = await request(app)
-      .get('/')
+      .get('/posts')
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -59,7 +66,7 @@ describe('posts GET /', () => {
     await prisma.post.deleteMany({});
 
     const response = await request(app)
-      .get('/')
+      .get('/posts')
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -70,7 +77,7 @@ describe('posts GET /', () => {
 
   it('Should return the correct number of posts per page', async () => {
     const response = await request(app)
-      .get('/')
+      .get('/posts')
       .query({ page: 1, limit: 2 }) // Request the first page with a limit of 2 posts per page
       .expect('Content-Type', /json/)
       .expect(200);
@@ -102,7 +109,7 @@ describe('posts GET /', () => {
 
   it('Should return the correct page of posts', async () => {
     const response = await request(app)
-      .get('/')
+      .get('/posts')
       .query({ page: 2, limit: 2 }) // Request the second page with a limit of 2 posts per page
       .expect('Content-Type', /json/)
       .expect(200);
@@ -122,7 +129,7 @@ describe('posts GET /', () => {
 
   it('Should return an empty array if the page exceeds the number of available posts', async () => {
     const response = await request(app)
-      .get('/')
+      .get('/posts')
       .query({ page: 10, limit: 2 }) // Request a page that doesn't exist
       .expect('Content-Type', /json/)
       .expect(200);
@@ -134,7 +141,7 @@ describe('posts GET /', () => {
 
   it('Should return all posts if no pagination parameters are provided', async () => {
     const response = await request(app)
-      .get('/')
+      .get('/posts')
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -153,7 +160,7 @@ describe('posts GET /', () => {
 describe('posts GET /:id', () => {
   it('Should return a post with the specified ID', async () => {
     const response = await request(app)
-      .get('/1')
+      .get('/posts/1')
       .expect('Content-Type', /json/)
       .expect(200)
 
@@ -169,7 +176,7 @@ describe('posts GET /:id', () => {
 
   it('Should return a 404 error for a non-existent post', async () => {
     const response = await request(app)
-      .get('/999')
+      .get('/posts/999')
       .expect('Content-Type', /json/)
       .expect(404); // Assuming the server responds with 404 for not found
 
@@ -180,7 +187,7 @@ describe('posts GET /:id', () => {
 
   it('Should return a 400 error for an invalid ID', async () => {
     const response = await request(app)
-      .get('/abc')
+      .get('/posts/abc')
       .expect('Content-Type', /json/)
       .expect(400); // Assuming the server responds with 400 for bad requests
 
@@ -191,7 +198,7 @@ describe('posts GET /:id', () => {
 
   it('Should return a 404 error for a negative ID', async () => {
     const response = await request(app)
-      .get('/-1')
+      .get('/posts/-1')
       .expect('Content-Type', /json/)
       .expect(404); // Assuming the server responds with 404 for not found
 
@@ -202,7 +209,7 @@ describe('posts GET /:id', () => {
 
   it('Should return a 404 error for ID 0', async () => {
     const response = await request(app)
-      .get('/0')
+      .get('/posts/0')
       .expect('Content-Type', /json/)
       .expect(404); // Assuming the server responds with 404 for not found
 
@@ -216,7 +223,7 @@ describe('posts GET /:id', () => {
 describe('GET /:id/comments', () => {
   it('Should return comments for a valid post ID', async () => {
     const response = await request(app)
-      .get('/1/comments')
+      .get('/posts/1/comments')
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -250,7 +257,7 @@ describe('GET /:id/comments', () => {
 
   it('Should return an empty array if no comments exist for the post', async () => {
     const response = await request(app)
-      .get('/5/comments')
+      .get('/posts/5/comments')
       .expect('Content-Type', /json/)
       .expect(200);
 
@@ -261,7 +268,7 @@ describe('GET /:id/comments', () => {
 
   it('Should return a 404 error for a non-existent post ID', async () => {
     const response = await request(app)
-      .get('/999/comments')
+      .get('/posts/999/comments')
       .expect('Content-Type', /json/)
       .expect(404);
 
@@ -272,7 +279,7 @@ describe('GET /:id/comments', () => {
 
   it('Should return a 400 error for an invalid post ID', async () => {
     const response = await request(app)
-      .get('/abc/comments')
+      .get('/posts/abc/comments')
       .expect('Content-Type', /json/)
       .expect(400);
 
@@ -283,7 +290,7 @@ describe('GET /:id/comments', () => {
 
   it('Should return a 404 error for a negative post ID', async () => {
     const response = await request(app)
-      .get('/-1/comments')
+      .get('/posts/-1/comments')
       .expect('Content-Type', /json/)
       .expect(404);
 
@@ -294,7 +301,7 @@ describe('GET /:id/comments', () => {
 
   it('Should return a 404 error for ID 0', async () => {
     const response = await request(app)
-      .get('/0/comments')
+      .get('/posts/0/comments')
       .expect('Content-Type', /json/)
       .expect(404);
 
@@ -303,3 +310,99 @@ describe('GET /:id/comments', () => {
     expect(response.body.message).toContain('Post not found');
   });
 });
+
+// TODO: turn off all authentication and validation for controllers testgin
+// and turn on in distinct test for auth testing
+describe('POST / (CREATE POST)', () => {
+  let authToken;
+  beforeAll(async () => {
+    const response = await request(app)
+      .post('/register')
+      .send({
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'janedoe@example.com',
+        username: 'janedoe',
+        password: 'password123@',
+        passwordConfirm: 'password123@',
+      })
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    authToken = response.body.token;
+  });
+
+  it('should create a post successfully with valid auth and role', async () => {
+    console.log(`'OUTPUT=AuthToken=`, authToken);
+    const response = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        title: 'New Post',
+        content: 'This is the content of the new post that is definitely more than 20 characters long.'
+      })
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('post');
+    expect(response.body.post).toHaveProperty('title', 'New Post');
+    expect(response.body.post).toHaveProperty('content', 'This is the content of the new post.');
+  });
+
+  it('should return 401 if not authenticated', async () => {
+    const response = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        title: 'New Post',
+        content: 'This is the content of the new post.',
+      })
+      .expect('Content-Type', /json/)
+      .expect(401);
+
+    expect(response.body).toHaveProperty('error', 'Unauthenticated');
+  });
+
+  it('should return 403 if the user role is insufficient', async () => {
+    const response = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        title: 'New Post',
+        content: 'This is the content of the new post.',
+      })
+      .expect('Content-Type', /json/)
+      .expect(403);
+
+    expect(response.body).toHaveProperty('error', 'Forbidden');
+  });
+
+  it('should return 400 for missing title', async () => {
+    const response = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        content: 'This is the content of the new post.',
+      })
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    expect(response.body).toHaveProperty('error', 'Title is required');
+  });
+
+  it('should return 400 for missing content', async () => {
+    const response = await request(app)
+      .post('/posts')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        title: 'New Post',
+      })
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    expect(response.body).toHaveProperty('error', 'Content is required');
+  });
+
+
+})
