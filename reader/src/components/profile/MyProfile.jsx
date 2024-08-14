@@ -2,6 +2,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthProvider";
 import { fetchWithAuth, useFetch } from "../../utils/utils";
 import { useEffect, useState } from "react";
+import formStyles from '../form.module.css';
+import styles from './Profile.module.css';
 
 // TODO: user should be able to change info in its own profile
 export default function MyProfile() {
@@ -78,41 +80,53 @@ export default function MyProfile() {
 
   return (
     <div>
-      <h1>My Profile</h1>
+      <h1 className={formStyles.headerTitle}>My Profile</h1>
       {editMode ? (
-        <form onSubmit={handleSubmit}>
-          <label>
-            First Name:
+        <form
+          onSubmit={handleSubmit}
+          className={formStyles.form}
+        >
+          <div className={formStyles.formField}>
+            <label htmlFor="firstName">
+              First Name:
+            </label>
             <input
               type="text"
               name="firstName"
+              id="firstName"
               value={formData.firstName}
               onChange={handleChange}
             />
-          </label>
-          <br />
-          <label>
-            Last Name:
+          </div>
+
+          <div className={formStyles.formField}>
+            <label htmlFor="lastName">
+              Last Name:
+            </label>
             <input
               type="text"
               name="lastName"
+              id="lastName"
               value={formData.lastName}
               onChange={handleChange}
             />
-          </label>
-          <br />
-          <button type="submit">Save</button>
-          <button type="button" onClick={handleEditClick}>Cancel</button>
+          </div>
+          <div className={formStyles.actions}>
+            <button type="submit">Save</button>
+            <button type="button" onClick={handleEditClick}>Cancel</button>
+          </div>
         </form>
       ) : (
-        <>
+        <div className={styles.profileInfo}>
           <h2>{userData.firstName} {userData.lastName}</h2>
           <p>Email: {userData.email}</p>
           <p>Registered at: {userData.registeredAt}</p>
           <p>Role: {userData.role}</p>
 
+          <div className={styles.editWrapper}>
           <button onClick={handleEditClick}>Edit</button>
-        </>
+          </div>
+        </div>
       )}
     </div>
   );

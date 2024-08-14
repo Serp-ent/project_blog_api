@@ -22,3 +22,26 @@
   font-size: 1.1rem;
   width: 50%;
 }
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 16px 0;
+  width: 80%;
+}
+
+.actions button {
+  text-align: center;
+  width: 100%;
+  padding: 4px 8px;
+  background-color: white;
+  font-size: 1.1rem;
+  border: 1px solid #666666;
+  border-radius: 16px;
+}
+
+.headerTitle {
+  text-align: center;
+}
+

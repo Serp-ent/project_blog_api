@@ -29,8 +29,8 @@ export default function Profile() {
 
   const userInfo = data.user;
   return (
-    <div>
-      <h1>{userInfo.firstName} {userInfo.lastName}</h1>
+    <div className={styles.profileInfo} >
+      <h2>{userInfo.firstName} {userInfo.lastName}</h2>
       <p>email: {userInfo.email}</p>
       <p>registered at {userInfo.registeredAt}</p>
     </div>
