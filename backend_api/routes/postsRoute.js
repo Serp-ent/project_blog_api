@@ -8,8 +8,10 @@ const passport = require('../config/passport-cfg');
 // TODO: add authentication
 postsRoute.get('/', controller.getAllPosts);
 
-postsRoute.post('/', passport.authenticate('jwt'),
-  controller.createPost);
+postsRoute.post('/',
+  passport.authenticate('jwt', { session: false }),
+  controller.createPost,
+);
 
 postsRoute.get('/:id', controller.getPostWithId);
 postsRoute.delete('/:id', controller.deletePostWithId);

@@ -42,7 +42,7 @@ const validatePost = [
 const checkForValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new ValidationError(errors.array().at(0));
+    throw new ValidationError(errors.array().at(0).msg);
   }
 
   next();
@@ -56,7 +56,7 @@ const createPost = [
     const authorId = req.user.id;
 
     const post = await postService.createPost(authorId, title, content);
-    res.json({ message: "success", post });
+    res.json({ status: "success", post });
   })
 ]
 

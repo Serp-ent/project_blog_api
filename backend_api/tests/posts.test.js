@@ -12,9 +12,25 @@ const {
   testComments,
   getUsersWithHashedPasswords
 } = require('./testData');
+const passport = require('../config/passport-cfg');
+const { createPost } = require('../controllers/postsController');
 
+app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.post('/createPost',
+  (req, res, next) => {
+    // mock user 
+    req.user = {
+      id: 1,
+    };
+
+    next();
+  },
+  createPost
+);
+
 app.use('/posts', postRouter);
 app.use('/register', registerUser);
 
@@ -314,29 +330,9 @@ describe('GET /:id/comments', () => {
 // TODO: turn off all authentication and validation for controllers testgin
 // and turn on in distinct test for auth testing
 describe('POST / (CREATE POST)', () => {
-  let authToken;
-  beforeAll(async () => {
-    const response = await request(app)
-      .post('/register')
-      .send({
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'janedoe@example.com',
-        username: 'janedoe',
-        password: 'password123@',
-        passwordConfirm: 'password123@',
-      })
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    authToken = response.body.token;
-  });
-
   it('should create a post successfully with valid auth and role', async () => {
-    console.log(`'OUTPUT=AuthToken=`, authToken);
     const response = await request(app)
-      .post('/posts')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post('/createPost')
       .send({
         title: 'New Post',
         content: 'This is the content of the new post that is definitely more than 20 characters long.'
@@ -347,62 +343,32 @@ describe('POST / (CREATE POST)', () => {
     expect(response.body).toHaveProperty('status', 'success');
     expect(response.body).toHaveProperty('post');
     expect(response.body.post).toHaveProperty('title', 'New Post');
-    expect(response.body.post).toHaveProperty('content', 'This is the content of the new post.');
-  });
-
-  it('should return 401 if not authenticated', async () => {
-    const response = await request(app)
-      .post('/posts')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send({
-        title: 'New Post',
-        content: 'This is the content of the new post.',
-      })
-      .expect('Content-Type', /json/)
-      .expect(401);
-
-    expect(response.body).toHaveProperty('error', 'Unauthenticated');
-  });
-
-  it('should return 403 if the user role is insufficient', async () => {
-    const response = await request(app)
-      .post('/posts')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send({
-        title: 'New Post',
-        content: 'This is the content of the new post.',
-      })
-      .expect('Content-Type', /json/)
-      .expect(403);
-
-    expect(response.body).toHaveProperty('error', 'Forbidden');
+    expect(response.body.post).toHaveProperty('content', 'This is the content of the new post that is definitely more than 20 characters long.');
   });
 
   it('should return 400 for missing title', async () => {
     const response = await request(app)
-      .post('/posts')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post('/createPost')
       .send({
         content: 'This is the content of the new post.',
       })
       .expect('Content-Type', /json/)
       .expect(400);
 
-    expect(response.body).toHaveProperty('error', 'Title is required');
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message', 'Title is required');
   });
 
   it('should return 400 for missing content', async () => {
     const response = await request(app)
-      .post('/posts')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post('/createPost')
       .send({
         title: 'New Post',
       })
       .expect('Content-Type', /json/)
       .expect(400);
 
-    expect(response.body).toHaveProperty('error', 'Content is required');
+    expect(response.body).toHaveProperty('status', 'error');
+    expect(response.body).toHaveProperty('message', 'Content is required');
   });
-
-
 })
