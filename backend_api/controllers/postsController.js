@@ -4,8 +4,25 @@ const postService = require('../services/postService');
 const asyncHandler = require('express-async-handler');
 
 const getAllPosts = asyncHandler(async (req, res) => {
-  const posts = await postService.getAllPosts();
-  return res.json({ status: 'success', posts });
+  let { page, limit } = req.query;
+  page = parseInt(page, 10);
+  limit = parseInt(limit, 10);
+  if (isNaN(page) || page < 1) page = 1;
+  if (isNaN(limit) || limit < 1) limit = 10;
+
+  const offset = (page - 1) * limit;
+
+  const posts = await postService.getAllPosts({ skip: offset, take: limit });
+  const totalPosts = await postService.countPosts();
+
+  return res.json({
+    status: 'success',
+    posts,
+    page,
+    limit,
+    totalPosts,
+    totalPages: Math.ceil(totalPosts / limit),
+  });
 });
 
 const createPost = asyncHandler(async (req, res) => {

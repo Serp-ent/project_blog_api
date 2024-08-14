@@ -6,8 +6,18 @@ const findPostById = async (id) => {
   });
 }
 
-const getAllPosts = async () => {
-  return await prisma.post.findMany({});
+const getAllPosts = async ({ skip, take }) => {
+  return await prisma.post.findMany({
+    skip,
+    take,
+    orderBy: {
+      createdAt: 'desc',
+    }
+  });
+}
+
+const countPosts = async () => {
+  return await prisma.post.count();
 }
 
 const createPost = async (authorId, title, content) => {
@@ -49,4 +59,5 @@ module.exports = {
   getPostWithId,
   deletePostWithId,
   setPublishStateOfPost,
+  countPosts,
 }

@@ -67,6 +67,87 @@ describe('posts GET /', () => {
     expect(response.body).toHaveProperty('posts');
     expect(response.body.posts).toEqual([]);
   });
+
+  it('Should return the correct number of posts per page', async () => {
+    const response = await request(app)
+      .get('/')
+      .query({ page: 1, limit: 2 }) // Request the first page with a limit of 2 posts per page
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('posts');
+    expect(Array.isArray(response.body.posts)).toBeTruthy();
+    expect(response.body.posts.length).toBe(2); // Expect 2 posts to be returned
+
+    // Sort posts by createdAt date and id before comparison
+    const expectedPosts = testPosts
+      .sort((a, b) => {
+        const dateComparison = new Date(a.createdAt) - new Date(b.createdAt);
+        return dateComparison !== 0 ? dateComparison : a.id - b.id;
+      })
+      .slice(0, 2); // The first 2 posts
+
+    const simplifiedExpectedPosts = expectedPosts.map(({ createdAt, updatedAt, ...post }) => post);
+
+    const simplifiedReceivedPosts = response.body.posts
+      .sort((a, b) => {
+        const dateComparison = new Date(a.createdAt) - new Date(b.createdAt);
+        return dateComparison !== 0 ? dateComparison : a.id - b.id;
+      })
+      .map(({ createdAt, updatedAt, ...post }) => post);
+
+    expect(simplifiedReceivedPosts).toEqual(simplifiedExpectedPosts);
+  });
+
+  it('Should return the correct page of posts', async () => {
+    const response = await request(app)
+      .get('/')
+      .query({ page: 2, limit: 2 }) // Request the second page with a limit of 2 posts per page
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('posts');
+    expect(Array.isArray(response.body.posts)).toBeTruthy();
+    expect(response.body.posts.length).toBe(2); // Expect 2 posts to be returned
+
+    // Further verification if needed
+    const expectedPosts = testPosts.slice(2, 4); // The second set of 2 posts
+    const simplifiedExpectedPosts = expectedPosts.map(({ createdAt, updatedAt, ...post }) => post);
+    const simplifiedReceivedPosts = response.body.posts.map(({ createdAt, updatedAt, ...post }) => post);
+
+    expect(simplifiedReceivedPosts).toEqual(simplifiedExpectedPosts);
+  });
+
+  it('Should return an empty array if the page exceeds the number of available posts', async () => {
+    const response = await request(app)
+      .get('/')
+      .query({ page: 10, limit: 2 }) // Request a page that doesn't exist
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('posts');
+    expect(response.body.posts).toEqual([]);
+  });
+
+  it('Should return all posts if no pagination parameters are provided', async () => {
+    const response = await request(app)
+      .get('/')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('posts');
+    expect(Array.isArray(response.body.posts)).toBeTruthy();
+    expect(response.body.posts.length).toBe(testPosts.length); // All posts should be returned
+
+    const simplifiedExpectedPosts = testPosts.map(({ createdAt, updatedAt, ...post }) => post);
+    const simplifiedReceivedPosts = response.body.posts.map(({ createdAt, updatedAt, ...post }) => post);
+
+    expect(simplifiedReceivedPosts).toEqual(simplifiedExpectedPosts);
+  });
 })
 
 describe('posts GET /:id', () => {
@@ -129,6 +210,7 @@ describe('posts GET /:id', () => {
     expect(response.body).toHaveProperty('message');
     expect(response.body.message).toContain('Post not found'); // Adjust according to your error message
   });
+
 })
 
 describe('GET /:id/comments', () => {
