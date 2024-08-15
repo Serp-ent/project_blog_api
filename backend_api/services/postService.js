@@ -63,7 +63,7 @@ const deletePostWithId = async (id) => {
 }
 
 const setPublishStateOfPost = async (id, publishState) => {
-  await prisma.post.update({
+  return await prisma.post.update({
     where: { id },
     data: {
       published: publishState,

@@ -51,7 +51,8 @@ export default function PostDetail({ handleEdit, handleDelete }) {
           <p>{post.content}</p>
 
           <div className="actions">
-            <button onClick={() => navigate(-1)}>back</button>
+            <button onClick={() => navigate(-1)}>Back</button>
+            <button onClick={() => console.log('publish')}>Publish</button>
             <button onClick={() => handleEdit(post.id)}>Edit</button>
             <button onClick={() => handleDeletePost(post.id)}>Delete</button>
 

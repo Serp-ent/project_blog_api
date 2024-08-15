@@ -24,16 +24,15 @@
 
 .actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  justify-content: space-between;
   margin: 8px;
 }
 
 .actions button {
+  font-size: 0.85rem;
   border: 1px solid black;
   background-color: white;
-  padding: 4px 12px;
+  padding: 4px 8px;
   border-radius: 16px;
-  width: 25%;
   text-align: center;
 }

@@ -82,7 +82,9 @@ const deletePostWithId = asyncHandler(async (req, res) => {
 const publishPostWithId = asyncHandler(async (req, res) => {
   // TODO: add query parameter to hide post
   const id = Number(req.params.id);
-  const post = await postService.setPublishStateOfPost(id, true);
+  const { publishState } = req.body;
+
+  const post = await postService.setPublishStateOfPost(id, publishState);
 
   const visibility = post.published ? 'published' : 'hidden';
   return res.json({ message: `post ${id} is now ${visibility}` });
