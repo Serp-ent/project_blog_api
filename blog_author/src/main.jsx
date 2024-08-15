@@ -14,6 +14,8 @@ import PostsList from './components/PostsList.jsx'
 import LogoutPage from './components/LogoutPage.jsx'
 import { AuthProvider, useAuth } from './utils/Auth.jsx'
 import PostDetail from './components/PostDetails.jsx'
+import MyProfile from './components/profile/MyProfile.jsx'
+import Profile from './components/profile/Profile.jsx'
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated } = useAuth();
@@ -66,7 +68,16 @@ const router = createBrowserRouter([
           />
         }
         />
-
+      },
+      {
+        path: '/profile',
+        element: <ProtectedRoute
+          element={<MyProfile />}>
+        </ProtectedRoute>,
+      },
+      {
+        path: '/profile/:id',
+        element: <Profile />
       }
     ],
   },

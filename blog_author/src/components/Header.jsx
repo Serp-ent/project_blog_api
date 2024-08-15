@@ -10,6 +10,7 @@ export default function Header() {
         <>
           <Link to={'/create'}>Create Post</Link>
           <Link to={'/posts'}>Show Posts</Link>
+          <Link to={"/profile"}>Profile</Link>
           <Link to={"/logout"}>Logout</Link>
         </>
         : (
