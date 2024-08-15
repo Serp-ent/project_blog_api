@@ -1,0 +1,21 @@
+.form {
+  border: 1px solid #66666666;
+  padding: 4px;
+}
+
+.form textarea {
+  width: 100%;
+}
+
+.submit {
+  background-color: white;
+  border: 1px solid #666666;
+  border-radius: 8px;
+  padding: 4px 8px;
+  color: inherit;
+}
+
+.submitWrapper {
+  display: flex;
+  justify-content: flex-end;
+}

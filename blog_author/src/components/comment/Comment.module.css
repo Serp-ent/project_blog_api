@@ -1,0 +1,27 @@
+.comment {
+  border: 1px solid #66666655;
+  margin: 4px;
+  padding: 4px;
+}
+
+.comment h6 {
+  margin: 0;
+  padding: 2px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.comment p {
+  margin: 0;
+  font-size: 0.9rem;
+  padding: 4px;
+}
+
+.username a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1rem;
+}

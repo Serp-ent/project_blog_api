@@ -13,6 +13,7 @@ import CreatePost from './components/CreatePost.jsx'
 import PostsList from './components/PostsList.jsx'
 import LogoutPage from './components/LogoutPage.jsx'
 import { AuthProvider, useAuth } from './utils/Auth.jsx'
+import PostDetail from './components/PostDetails.jsx'
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated } = useAuth();
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
         path: '/posts',
         element: <ProtectedRoute element={<PostsList />} />
       },
+      {
+        path: '/posts/:id',
+        element: <ProtectedRoute element={<PostDetail />} />
+      }
     ],
   },
   {
