@@ -57,10 +57,10 @@ export default function CreatePost() {
         />
 
         <div>
+          <button type='submit'> Create </button>
           <button type="button" onClick={() => navigate(-1)} >
             Cancel
           </button>
-          <button type='submit'> Create </button>
         </div>
       </form>
 
