@@ -43,6 +43,49 @@ export default function PostDetail({ handleEdit, handleDelete }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
+  const handlePublishChange = async () => {
+    const newState = !post.published;
+
+    const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+    try {
+      const result = await fetch(`http://localhost:3000/api/posts/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          publishState: newState,
+        })
+      });
+
+      if (!result.ok) {
+        if (result.status === 401) {
+          return;
+        }
+        // If the status code is not in the 200 range, handle the error
+        const errorData = await result.json(); // Parse the response body as JSON
+        console.error('Error:', errorData.message); // Log the error message from the response
+        return;
+      }
+
+      setPost({ ...post, published: newState });
+    }
+    catch (err) {
+      console.log(err);
+    }
+
+
+  }
+
+  const visibilityButton = <button
+    onClick={handlePublishChange}
+  >
+    {post.published ? "Published" : "Hidden"}
+  </button>;
+
+
+
   return (
     <div>
       {post ? (
@@ -52,7 +95,7 @@ export default function PostDetail({ handleEdit, handleDelete }) {
 
           <div className="actions">
             <button onClick={() => navigate(-1)}>Back</button>
-            <button onClick={() => console.log('publish')}>Publish</button>
+            {visibilityButton}
             <button onClick={() => handleEdit(post.id)}>Edit</button>
             <button onClick={() => handleDeletePost(post.id)}>Delete</button>
 
