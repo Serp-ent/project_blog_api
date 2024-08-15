@@ -1,12 +1,13 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CommentSection from "./commentSection/CommentSection";
 
-export default function PostDetail() {
+export default function PostDetail({ handleEdit, handleDelete }) {
   const { id } = useParams(); // Extract the id parameter from the URL
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch the post data using the id
@@ -43,6 +44,12 @@ export default function PostDetail() {
           <h1>{post.title}</h1>
           <p>{post.content}</p>
 
+          <div className="actions">
+            <button onClick={() => navigate(-1)}>back</button>
+            <button onClick={() => handleEdit(post.id)}>Edit</button>
+            <button onClick={() => handleDelete(post.id)}>Delete</button>
+
+          </div>
           <CommentSection postId={id} />
         </>
       ) : (

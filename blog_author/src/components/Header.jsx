@@ -6,10 +6,12 @@ export default function Header() {
   return (
     <header>
       <h1>Awesome Blog Admin</h1>
-      <Link to={'/create'}>Create Post</Link>
-      <Link to={'/posts'}>Show Posts</Link>
       {isAuthenticated ?
-        <Link to={"/logout"}>Logout</Link>
+        <>
+          <Link to={'/create'}>Create Post</Link>
+          <Link to={'/posts'}>Show Posts</Link>
+          <Link to={"/logout"}>Logout</Link>
+        </>
         : (
           <>
             <Link to={'/login'}>Login</Link>

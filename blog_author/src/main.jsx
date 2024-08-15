@@ -20,6 +20,15 @@ function ProtectedRoute({ element }) {
   return isAuthenticated ? element : <Navigate to={'/login'} />
 }
 
+
+const handleEdit = (id) => {
+  console.log('Edit', id)
+}
+const handleDelete = (id) => {
+  console.log('delete', id)
+}
+
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -40,11 +49,24 @@ const router = createBrowserRouter([
       },
       {
         path: '/posts',
-        element: <ProtectedRoute element={<PostsList />} />
+        element: <ProtectedRoute element={
+          <PostsList
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+          />
+        }
+        />
       },
       {
         path: '/posts/:id',
-        element: <ProtectedRoute element={<PostDetail />} />
+        element: <ProtectedRoute element={
+          <PostDetail
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+          />
+        }
+        />
+
       }
     ],
   },
