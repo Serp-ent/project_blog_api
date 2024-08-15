@@ -1,0 +1,39 @@
+.postItem {
+  border: 1px solid black;
+  margin: 8px;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.postItem h3 {
+  margin: 4px;
+  padding: 4px;
+  text-align: center;
+}
+
+.postItem h4 {
+  margin: 4px;
+  padding: 0;
+
+}
+
+.postItem p {
+  padding: 2px;
+  margin: 2px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 8px;
+}
+
+.actions button {
+  border: 1px solid black;
+  background-color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  width: 25%;
+  text-align: center;
+}

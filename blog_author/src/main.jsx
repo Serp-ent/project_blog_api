@@ -11,12 +11,11 @@ import Root from './components/Root.jsx'
 import RegisterPage from './components/RegisterPage.jsx'
 import CreatePost from './components/CreatePost.jsx'
 import PostsList from './components/PostsList.jsx'
-import { AuthProvider, useAuth } from './auth/Auth.jsx'
 import LogoutPage from './components/LogoutPage.jsx'
+import { AuthProvider, useAuth } from './utils/Auth.jsx'
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated } = useAuth();
-  console.log(isAuthenticated);
   return isAuthenticated ? element : <Navigate to={'/login'} />
 }
 

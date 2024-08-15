@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/Auth";
+import { useAuth } from "../utils/Auth";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -9,7 +9,7 @@ export default function LoginPage() {
     <div>
       <h1>Login</h1>
       <button onClick={() => {
-        login();
+        login('mockedToken');
         navigate('/');
       }}>Log in</button>
     </div>

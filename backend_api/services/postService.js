@@ -12,6 +12,16 @@ const getAllPosts = async ({ skip, take }) => {
     take,
     orderBy: {
       createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+          username: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        }
+      },
     }
   });
 }
