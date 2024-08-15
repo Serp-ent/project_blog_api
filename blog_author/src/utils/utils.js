@@ -27,6 +27,12 @@ export function useFetch(url, options = {}) {
   useEffect(() => {
     let isMounted = true;
 
+    // Don't fetch if the URL is null
+    if (!url) {
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const response = await fetch(url, options);
