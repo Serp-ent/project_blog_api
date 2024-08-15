@@ -52,7 +52,17 @@ const createPost = async (authorId, title, content) => {
 
 const getPostWithId = async (id) => {
   return await prisma.post.findUnique({
-    where: { id }
+    where: { id },
+    include: {
+      author: {
+        select: {
+          username: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        }
+      },
+    }
   });
 }
 

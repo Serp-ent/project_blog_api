@@ -1,3 +1,4 @@
+const prisma = require('../db/prismaClient');
 const { NotFoundError, ValidationError } = require('../errors/errors');
 const { ensureIdIsNumber } = require('../middleware/ensureIdIsNumber');
 const postService = require('../services/postService');
@@ -90,10 +91,32 @@ const publishPostWithId = asyncHandler(async (req, res) => {
   return res.json({ message: `post ${id} is now ${visibility}` });
 })
 
-const updatePostWithId = (req, res) => {
-  // TODO: 
-  res.send('switch with new version of post');
-}
+const updatePostWithId = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
+
+  try {
+    const post = await prisma.post.update({
+      where: { id: parseInt(id) },
+      data: {
+        // only update if provided
+        title: title || undefined,
+        content: content || undefined,
+      }
+    })
+
+    return res.json({
+      status: 'success',
+      post,
+    });
+
+  } catch (err) {
+    if (err.code === 'P2025') {
+      throw NotFoundError('Post not found');
+    }
+    throw err;
+  }
+});
 
 module.exports = {
   getAllPosts,

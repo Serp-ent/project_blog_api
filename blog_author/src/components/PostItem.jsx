@@ -1,9 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './PostItem.module.css'
 
 export default function PostItem({
   post,
-  handleEdit,
   handleDelete,
   setIsPublish,
 }) {
@@ -35,7 +34,7 @@ export default function PostItem({
       <div className={styles.actions}>
         {visibilityButton}
         <button onClick={() => navigate(`/posts/${post.id}`)}>Details</button>
-        <button onClick={() => handleEdit(post.id)}>Edit</button>
+        <button onClick={() => navigate(`/posts/${post.id}/edit`)}>Edit</button>
         <button onClick={() => handleDelete(post.id)}>Delete</button>
       </div>
     </div>

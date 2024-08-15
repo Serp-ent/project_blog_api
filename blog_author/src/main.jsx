@@ -17,6 +17,7 @@ import PostDetail from './components/PostDetails.jsx'
 import MyProfile from './components/profile/MyProfile.jsx'
 import Profile from './components/profile/Profile.jsx'
 import { fetchWithAuth } from './utils/utils.js'
+import EditPost from './components/EditPost.jsx'
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated } = useAuth();
@@ -69,6 +70,11 @@ const router = createBrowserRouter([
             handleEdit={handleEdit}
           />
         }
+        />
+      },
+      {
+        path: '/posts/:id/edit',
+        element: <ProtectedRoute element={ <EditPost /> }
         />
       },
       {

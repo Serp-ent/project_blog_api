@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CommentSection from "./commentSection/CommentSection";
 
@@ -96,7 +96,7 @@ export default function PostDetail({ handleEdit, handleDelete }) {
           <div className="actions">
             <button onClick={() => navigate(-1)}>Back</button>
             {visibilityButton}
-            <button onClick={() => handleEdit(post.id)}>Edit</button>
+            <button onClick={() => navigate(`/posts/${post.id}/edit`)}>Edit</button>
             <button onClick={() => handleDeletePost(post.id)}>Delete</button>
 
           </div>
