@@ -12,9 +12,11 @@ import RegisterPage from './components/RegisterPage.jsx'
 import CreatePost from './components/CreatePost.jsx'
 import PostsList from './components/PostsList.jsx'
 import { AuthProvider, useAuth } from './auth/Auth.jsx'
+import LogoutPage from './components/LogoutPage.jsx'
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated } = useAuth();
+  console.log(isAuthenticated);
   return isAuthenticated ? element : <Navigate to={'/login'} />
 }
 
@@ -39,8 +41,12 @@ const router = createBrowserRouter([
       {
         path: '/posts',
         element: <ProtectedRoute element={<PostsList />} />
-      }
-    ]
+      },
+    ],
+  },
+  {
+    path: '/logout',
+    element: <LogoutPage></LogoutPage>
   },
 ])
 
