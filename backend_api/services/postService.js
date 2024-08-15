@@ -36,6 +36,16 @@ const createPost = async (authorId, title, content) => {
       authorId,
       title,
       content,
+    },
+    include: {
+      author: {
+        select: {
+          username: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        }
+      }
     }
   });
 }

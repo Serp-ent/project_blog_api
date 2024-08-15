@@ -27,8 +27,6 @@ export function AuthProvider({ children }) {
           username: decodedToken.username,
           id: decodedToken.id,
         });
-
-        console.log('decodedToken: ', decodedToken)
       } catch (err) {
         console.log('jwtToken decode error', err);
       }
