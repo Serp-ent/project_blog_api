@@ -1,8 +1,16 @@
+import { useEffect, useState } from "react";
 import { useFetch } from "../utils/utils";
 import PostItemOverview from "./PostItem";
 
 export default function PostsList({ handleEdit, handleDelete }) {
   const { data, loading, error } = useFetch('http://localhost:3000/api/posts');
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    if (data && data.posts) {
+      setPosts(data.posts);
+    }
+  }, [data])
 
   if (loading) {
     return <div>Loading...</div>
@@ -11,12 +19,12 @@ export default function PostsList({ handleEdit, handleDelete }) {
     return <div>{error.message}</div>
   }
 
-  const handleDeletePost = (id) => {
-    handleDelete(id);
-    // remove locally from data.posts
-    // setPosts(posts.filter(post => post.id !== postId));
+  const handleDeletePost = async (id) => {
+    await handleDelete(id);
+    setPosts(posts.filter(post => post.id !== id));
   }
-  const postsList = data.posts.map(post => {
+
+  const postsList = posts.map(post => {
     return (
       <PostItemOverview
         key={post.id}

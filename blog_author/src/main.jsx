@@ -16,6 +16,7 @@ import { AuthProvider, useAuth } from './utils/Auth.jsx'
 import PostDetail from './components/PostDetails.jsx'
 import MyProfile from './components/profile/MyProfile.jsx'
 import Profile from './components/profile/Profile.jsx'
+import { fetchWithAuth } from './utils/utils.js'
 
 function ProtectedRoute({ element }) {
   const { isAuthenticated } = useAuth();
@@ -26,10 +27,11 @@ function ProtectedRoute({ element }) {
 const handleEdit = (id) => {
   console.log('Edit', id)
 }
-const handleDelete = (id) => {
-  console.log('delete', id)
+const handleDelete = async (id) => {
+  await fetchWithAuth(`http://localhost:3000/api/posts/${id}`, {
+    method: 'DELETE',
+  });
 }
-
 
 const router = createBrowserRouter([
   {

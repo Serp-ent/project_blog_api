@@ -9,6 +9,12 @@ export default function PostDetail({ handleEdit, handleDelete }) {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+
+  const handleDeletePost = async (id) => {
+    await handleDelete(id);
+    navigate('/posts');
+  }
+
   useEffect(() => {
     // Fetch the post data using the id
     async function fetchPost() {
@@ -47,7 +53,7 @@ export default function PostDetail({ handleEdit, handleDelete }) {
           <div className="actions">
             <button onClick={() => navigate(-1)}>back</button>
             <button onClick={() => handleEdit(post.id)}>Edit</button>
-            <button onClick={() => handleDelete(post.id)}>Delete</button>
+            <button onClick={() => handleDeletePost(post.id)}>Delete</button>
 
           </div>
           <CommentSection postId={id} />

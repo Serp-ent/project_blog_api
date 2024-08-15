@@ -11,7 +11,6 @@ export async function fetchWithAuth(url, options = {}) {
   };
 
   const response = await fetch(url, defaultOptions)
-  console.log(response);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
